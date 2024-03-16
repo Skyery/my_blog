@@ -1,9 +1,13 @@
-import { defineDocumentType, makeSource } from './src/lib/contentLayerAdapter';
+import rehypeCodeTitles from 'rehype-code-titles';
+import rehypePrism from 'rehype-prism-plus';
+
+import { defineDocumentType, makeSource } from 'contentlayer/source-files';
 
 export const Post = defineDocumentType(() => ({
     name: 'Post',
-    // filePathPattern: `content/posts/**/*.mdx`,
     filePathPattern: `**/**/*.mdx`,
+    contentType: "mdx",
+    bodyType: "none",
     fields: {
         title: {
             type: 'string',
@@ -25,8 +29,7 @@ export const Post = defineDocumentType(() => ({
     computedFields: {
         path: {
             type: 'string',
-            // resolve: (post) => `/posts/${post.slug}`,
-            resolve: (post) => `/posts/${post._raw.flattenedPath}`,
+            resolve: (post) => `/posts/${post.slug}`,
         },
     },
 }));
@@ -34,4 +37,7 @@ export const Post = defineDocumentType(() => ({
 export default makeSource({
     contentDirPath: 'content',
     documentTypes: [Post],
+    mdx: {
+        rehypePlugins: [rehypeCodeTitles, [rehypePrism, { ignoreMissing: true }]],
+    },
 });
