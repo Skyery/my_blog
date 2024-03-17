@@ -8,7 +8,6 @@ import { ThemeProviders, NprogressProvider } from "./providers";
 import LayoutWrapper from "./components/LayoutWrapper";
 import CommandPalette from '@/app/components/CommandPalette';
 
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {

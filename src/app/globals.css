@@ -6,44 +6,36 @@
     h1 {
         @apply text-4xl;
         @apply font-bold;
+        /* @apply dark:text-gray-100 */
     }
 
     h2 {
         @apply text-3xl;
         @apply font-bold;
+        /* @apply dark:text-gray-100 */
     }
 
     h3 {
         @apply text-2xl;
         @apply font-bold;
+        /* @apply dark:text-gray-100 */
     }
 
     h4 {
         @apply text-xl;
         @apply font-semibold;
+        /* @apply dark:text-gray-100 */
     }
 
     h5 {
         @apply text-lg;
         @apply font-semibold;
+        /* @apply dark:text-gray-100 */
     }
 
     h6 {
         @apply text-sm;
         @apply font-semibold;
+        /* @apply dark:text-gray-100 */
     }
 }
-
-
-/* #nprogress .bar {
-    height: 0.25rem;
-    background: #ab3493 !important;
-}
-
-​ #nprogress .peg {
-    background: #ab3493 !important;
-}
-
-​ #nprogress .spinner {
-    display: none !important;
-} */
