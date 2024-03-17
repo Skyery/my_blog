@@ -21,6 +21,9 @@ const nextConfig = {
         // your project has type errors.
         ignoreBuildErrors: true,
     },
+    images: {
+        formats: ['image/avif', 'image/webp'],
+    }
 };
 
 export default withContentlayer(nextConfig);

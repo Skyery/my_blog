@@ -5,6 +5,7 @@ import PostLayout, {
     PostForPostLayout,
     RelatedPostForPostLayout,
 } from '@/app/components/PostLayout';
+import mdxComponents from '@/app/lib/mdxComponents';
 
 export interface PostForPostPage {
     title: string;
@@ -12,6 +13,7 @@ export interface PostForPostPage {
     description: string;
     body: {
         code: string;
+        raw: string;
     };
 }
 
@@ -34,6 +36,7 @@ export default function LayOutPage({ params }: { params: { slug: string } }) {
         description: postFull.description,
         body: {
             code: postFull.body.code,
+            raw: postFull.body.raw,
         },
     };
     if (!post) {
@@ -47,19 +50,8 @@ export default function LayOutPage({ params }: { params: { slug: string } }) {
     return (
         <>
             <PostLayout post={post} prevPost={prevPost} nextPost={nextPost}>
-                <MDXContent />
+                <MDXContent components={mdxComponents} />
             </PostLayout>
         </>
-        // <div>
-        //     <main>
-        //         <h1>{post.title}</h1>
-
-        //         <time dateTime={post.date}>
-        //             {format(parseISO(post.date), 'LLLL d, yyyy')}
-        //         </time>
-
-        //         <MDXContent />
-        //     </main>
-        // </div>
     )
 }

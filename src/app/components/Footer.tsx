@@ -1,4 +1,4 @@
-import CustomLink from "./CustomLink";
+import CustomLink from "./CustomLink/CustomLink";
 import SocialIcon from "@/app/components/SocialIcon/SocialIcon";
 import { footerConfigs } from "@/app/configs/footerConfigs";
 

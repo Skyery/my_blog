@@ -1,11 +1,14 @@
-import CustomLink from "@/app/components/CustomLink";
-import PostBody from '@/app/components/PostBody';
+import CustomLink from "@/app/components/CustomLink/CustomLink";
 import PageTitle from '@/app/components/PageTitle';
+import PostBody from '@/app/components/PostBody';
+import TableOfContents from '@/app/components/TableOfContents';
 import formatDate from "@/app/lib/formatDate";
+import Comment from '@/app/components/Comment';
 
 export interface PostForPostLayout {
     date: string;
     title: string;
+    body: { raw: string };
 }
 
 export type RelatedPostForPostLayout = {
@@ -13,20 +16,25 @@ export type RelatedPostForPostLayout = {
     path: string;
 } | null;
 
-type Props = {
-    post: PostForPostLayout;
-    nextPost: RelatedPostForPostLayout;
-    prevPost: RelatedPostForPostLayout;
-    children: React.ReactNode;
-};
+// type Props = {
+//     post: PostForPostLayout;
+//     nextPost: RelatedPostForPostLayout;
+//     prevPost: RelatedPostForPostLayout;
+//     children: React.ReactNode;
+// };
 
 export default function PostLayout({
     post,
     nextPost,
     prevPost,
     children,
-}: Props) {
-    const { date, title } = post;
+}: {
+    post: PostForPostLayout,
+    nextPost: RelatedPostForPostLayout,
+    prevPost: RelatedPostForPostLayout,
+    children: React.ReactNode,
+}) {
+    const { date, title, body: { raw } } = post;
     // const { locale } = useRouter();
 
     return (
@@ -49,14 +57,20 @@ export default function PostLayout({
                     </div>
                 </header>
 
-                <div className="divide-y divide-gray-200 pt-10 pb-8 transition-colors dark:divide-gray-700">
-                    <PostBody>{children}</PostBody>
+                <div className="pb-8 transition-colors lg:grid lg:grid-cols-4 lg:gap-x-6" style={{ gridTemplateRows: 'auto 1fr' }}>
+                    <div className="divide-y divide-gray-200 pt-10 pb-8 transition-colors dark:divide-gray-700 lg:col-span-3">
+                        <PostBody>{children}</PostBody>
+                    </div>
+
+                    <aside>
+                        <div className="hidden lg:sticky lg:top-24 lg:col-span-1 lg:block">
+                            <TableOfContents source={raw} />
+                        </div>
+                    </aside>
                 </div>
 
-                <div
-                    className="divide-y divide-gray-200 pb-8 transition-colors dark:divide-gray-700"
-                // style={{ gridTemplateRows: 'auto 1fr' }}
-                >
+                <div className="divide-y divide-gray-200 pb-8 transition-colors dark:divide-gray-700">
+                    <Comment />
                     <footer>
                         <div className="flex flex-col gap-4 pt-4 text-base font-medium sm:flex-row sm:justify-between xl:gap-8 xl:pt-8">
                             {prevPost ? (

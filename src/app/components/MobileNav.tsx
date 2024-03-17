@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import CustomLink from "@/app/components/CustomLink";
+import CustomLink from "@/app/components/CustomLink/CustomLink";
 import { headerConfigs } from "@/app/configs/headerConfigs";
 
 const MobileNav = () => {

@@ -1,6 +1,6 @@
 // import { useRouter } from "next/router";
 
-import CustomLink from "@/app/components/CustomLink";
+import CustomLink from "@/app/components/CustomLink/CustomLink";
 import formatDate from "@/app/lib/formatDate";
 
 export interface PostForPostList {

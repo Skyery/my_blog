@@ -1,7 +1,8 @@
 import ThemeSwitch from "@/app/components/ThemeSwitch";
 import SectionContainer from "@/app/components/SectionContainer";
-import CustomLink from "@/app/components/CustomLink";
+import CustomLink from "@/app/components/CustomLink/CustomLink";
 import MobileNav from "@/app/components/MobileNav";
+import CommandPaletteToggle from '@/app/components/CommandPaletteToggle';
 import { headerConfigs } from "@/app/configs/headerConfigs";
 
 export default function Header() {
@@ -33,6 +34,7 @@ export default function Header() {
                         </div>
 
                         <ThemeSwitch />
+                        <CommandPaletteToggle />
                         <MobileNav />
                     </div>
                 </div>
