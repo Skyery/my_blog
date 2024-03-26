@@ -9,7 +9,7 @@ export default function PostBody({
     return (
         <div
             className={clsx(
-                'prose mx-auto transition-colors dark:prose-dark',
+                'prose mx-auto transition-colors dark:prose-invert',
                 styles.postBody
             )}
         >

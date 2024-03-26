@@ -47,6 +47,7 @@ export default function LayOutPage({ params }: { params: { slug: string } }) {
 
     const MDXContent = useMDXComponent(post?.body.code);
 
+
     return (
         <>
             <PostLayout post={post} prevPost={prevPost} nextPost={nextPost}>
