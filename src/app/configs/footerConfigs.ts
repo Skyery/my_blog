@@ -1,5 +1,5 @@
 export const footerConfigs = {
-    credit: 'By Skyery Lin',
+    credit: 'Inspired by EasonChang',
     socialLinks: {
         email: 'ru042l41j4@gmail.com',
         github: 'https://github.com/',
