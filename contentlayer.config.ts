@@ -8,7 +8,7 @@ import { defineDocumentType, makeSource } from 'contentlayer/source-files';
 
 export const Post = defineDocumentType(() => ({
     name: 'Post',
-    filePathPattern: `**/**/*.mdx`,
+    filePathPattern: `**/posts/*.mdx`,
     contentType: "mdx",
     bodyType: "none",
     fields: {
