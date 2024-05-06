@@ -1,4 +1,4 @@
 export const headerConfigs = {
-    title: `Skyery's Note`,
+    title: `Jason's Blog`,
     navLinks: [{ href: '/', title: '首頁' }],
 };
