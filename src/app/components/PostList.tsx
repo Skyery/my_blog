@@ -16,7 +16,7 @@ type Props = {
 }
 
 export default function PostList({ posts = [] }: Props) {
-    // const { locale } = useRouter();
+    // const { locale } = useRouter();    
 
     return (
         <ul className="divide-y divide-gray-200 transition-colors dark:divide-gray-700">

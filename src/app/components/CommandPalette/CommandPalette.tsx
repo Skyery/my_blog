@@ -5,6 +5,7 @@ import {
     LightBulbIcon,
     MoonIcon,
     SunIcon,
+    MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import {
     ActionId,
@@ -98,7 +99,7 @@ const ResultItem = forwardRef<Ref, ResultItemProps>(
 )
 
 const RenderResults = () => {
-    const { results, rootActionId } = useMatches();
+    const { results, rootActionId } = useMatches();    
 
     return (
         <KBarResults
@@ -154,6 +155,14 @@ export default function CommandPalette({
             },
         },
         // Operation section
+        // {
+        //     id: 'search-posts',
+        //     name: '文章',
+        //     keywords:
+        //       'search find posts writing words blog articles thoughts 搜尋 尋找 文章 寫作 部落格',
+        //     icon: <MagnifyingGlassIcon className="h-6 w-6" />,
+        //     section: '搜尋',
+        // },
         // - Theme toggle
         {
             id: 'theme',

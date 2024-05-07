@@ -8,7 +8,7 @@ import { defineDocumentType, makeSource } from 'contentlayer/source-files';
 
 export const Post = defineDocumentType(() => ({
     name: 'Post',
-    filePathPattern: `**/posts/*.mdx`,
+    filePathPattern: `posts/*.mdx`,
     contentType: "mdx",
     bodyType: "none",
     fields: {
@@ -37,9 +37,40 @@ export const Post = defineDocumentType(() => ({
     },
 }));
 
+export const LeetCode = defineDocumentType(() => ({
+    name: 'LeetCode',
+    filePathPattern: `leetcodes/*.mdx`,
+    contentType: "mdx",
+    bodyType: "none",
+    fields: {
+        title: {
+            type: 'string',
+            required: true,
+        },
+        description: {
+            type: 'string',
+            required: true,
+        },
+        slug: {
+            type: 'string',
+            required: true,
+        },
+        date: {
+            type: 'date',
+            required: true,
+        },
+    },
+    computedFields: {
+        path: {
+            type: 'string',
+            resolve: (post) => `/leetcodes/${post.slug}`,
+        },
+    },
+}));
+
 export default makeSource({
     contentDirPath: 'content',
-    documentTypes: [Post],
+    documentTypes: [Post, LeetCode],
     mdx: {
         rehypePlugins: [
             rehypeSlug,
