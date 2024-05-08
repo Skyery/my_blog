@@ -1,0 +1,33 @@
+---
+title: 9. Palindrome Number
+description: Easy - 9. Palindrome Number
+slug: palindrome-number
+date: 2021-03-18
+---
+
+## LeetCode 練習 - 9. Palindrome Number
+> Javascript  
+> 日常刷題練習
+
+## 題目分析
+給一正整數 **x**，若 **x** 是 **palindrome** 則回傳 **true**，否則回傳 **false**。
+
+## 最終結果
+
+```js:palindrome-number.js
+/**
+ * @param {number} x
+ * @return {boolean}
+ */
+var isPalindrome = function(x) {
+    var arr = x.toString().split('');
+    var a = arr.slice(0).reverse();
+    if (JSON.stringify(arr) === JSON.stringify(a)) {
+        return true;
+    } else {
+        return false;
+    }
+};
+```
+
+## 解題思路

@@ -1,0 +1,90 @@
+---
+title: 13. Roman to Integer
+description: Easy - 13. Roman to Integer
+slug: roman-to-integer
+date: 2021-03-18
+---
+
+## LeetCode 練習 - 13. Roman to Integer
+> Javascript  
+> 日常刷題練習
+
+## 題目分析
+羅馬數字由七個不同的符號表示：I、V、X、L、C、D 和 M。  
+
+<table class="tg">
+<thead>
+  <tr>
+    <th>符號</th>
+    <th>數值</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>I</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>V</td>
+    <td>5</td>
+  </tr>
+  <tr>
+    <td>X</td>
+    <td>10</td>
+  </tr>
+  <tr>
+    <td>L</td>
+    <td>50</td>
+  </tr>
+  <tr>
+    <td>C</td>
+    <td>100</td>
+  </tr>
+  <tr>
+    <td>D</td>
+    <td>500</td>
+  </tr>
+  <tr>
+    <td>M</td>
+    <td>1000</td>
+  </tr>
+</tbody>
+</table>
+
+例如，2 以羅馬數字表示為 II，即兩個 1 相加。12 以羅馬數字表示為 XII，即 X + II。27 以羅馬數字表示為 XXVII，即 XX + V + II。  
+
+羅馬數字通常從左到右按照由大到小的順序書寫。但是，表示 4 的數字並不是 IIII。相反，數字四寫作 IV。因為一在五之前，我們將其減去，得到四。同樣的原則適用於表示九的數字，即 IX。有六種情況下會使用減法：  
+
+I 可以放在 V（5）和 X（10）之前，表示 4 和 9。  
+X 可以放在 L（50）和 C（100）之前，表示 40 和 90。  
+C 可以放在 D（500）和 M（1000）之前，表示 400 和 900。  
+給定一個羅馬數字，將其轉換為整數。  
+
+## 最終結果
+
+```js:roman-to-integer.js
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var romanToInt = function(s) {
+    var symbols = {
+        I: 1,
+        V: 5,
+        X: 10,
+        L: 50,
+        C: 100,
+        D: 500,
+        M: 1000,
+    }
+    var val = 0;
+    for (var i = 0; i < s.length; i++) {
+        symbols[s[i]] < symbols[s[i + 1]]
+            ? val -= symbols[s[i]]
+            : val += symbols[s[i]];
+    }
+    return val;
+};
+```
+
+## 解題思路
