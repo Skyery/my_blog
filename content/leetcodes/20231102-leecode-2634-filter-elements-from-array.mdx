@@ -1,0 +1,42 @@
+---
+title: 30 Days of Javascript - 2634. Filter Elements from Array
+description: Easy - 2634. Filter Elements from Array
+slug: filter-elements-from-array
+date: 2023-11-02
+---
+
+## LeetCode 練習 - 2634. Filter Elements from Array
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一整數陣列 **arr** 以及一個函式 **fn**，傳回一個新陣列，對每個元素進行轉換。  
+
+函式 **fn** 接受一個或兩個參數：  
+
+* arr[i] - arr 中的數字  
+* i - arr[i] 的索引  
+
+**filteredArr** 只應包含對 **fn(arr[i], i)** 求值為真值的元素，真值是指 **Boolean(value)** 返回 **true** 的值。  
+
+不能使用內建的 **Array.filter** 方法。
+
+## 最終結果
+
+```js:filter-elements-from-array.js
+/**
+ * @param {number[]} arr
+ * @param {Function} fn
+ * @return {number[]}
+ */
+var filter = function(arr, fn) {
+    const result = [];
+
+    for(const [index, val] of arr.entries()){
+        if(fn(val, index)) result.push(val);
+    }
+    return result;
+};
+```
+
+## 解題思路

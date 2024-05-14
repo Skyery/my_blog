@@ -1,0 +1,39 @@
+---
+title: 30 Days of Javascript - 2629. Function Composition
+description: Easy - 2629. Function Composition
+slug: function-composition
+date: 2023-11-02
+---
+
+## LeetCode 練習 - 2629. Function Composition
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一函式陣列 **[f1, f2, f3, ..., fn]**，傳回一個新函式 **fn**，該函式是函式陣列的組合函式。  
+
+函式陣列的組合函式是指 **[f(x), g(x), h(x)]** 的組合是 **fn(x) = f(g(h(x)))**。  
+
+如果函式陣列為空，則組合函式為 **f(x) = x**。
+
+你可以假設陣列中的每個函式都接受一個整數作為輸入並返回一個整數作為輸出。
+
+## 最終結果
+
+```js:function-composition.js
+/**
+ * @param {Function[]} functions
+ * @return {Function}
+ */
+var compose = function(functions) {
+    return (x) => {
+        functions.reduceRight((a, b) => {
+            a = b(x)
+            x = a
+        }, x)
+        return x
+    }
+};
+```
+
+## 解題思路

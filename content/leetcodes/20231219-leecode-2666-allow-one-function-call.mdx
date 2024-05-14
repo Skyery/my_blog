@@ -1,0 +1,39 @@
+---
+title: 30 Days of Javascript - 2666. Allow One Function Call
+description: Easy - 2666. Allow One Function Call
+slug: allow-one-function-call
+date: 2023-12-19
+---
+
+## LeetCode 練習 - 2666. Allow One Function Call
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一函式 **fn**，傳回一個新函式，該函式與原始函式相同，但確保 **fn** 最多被調用一次。
+
+* 第一次調用函式時，它應返回與 **fn** 相同的結果。  
+* 每次後續調用時，它應返回 undefined。
+
+## 最終結果
+
+```js:allow-one-function-call.js
+/**
+ * @param {Function} fn
+ * @return {Function}
+ */
+var once = function(fn) {
+    let isCalled = false;
+
+    return function(...args){
+        if(!isCalled){
+            isCalled = true;
+            return fn(...args);
+        }
+
+        return undefined;
+    }
+};
+```
+
+## 解題思路
