@@ -39,7 +39,7 @@ export const Post = defineDocumentType(() => ({
 
 export const LeetCode = defineDocumentType(() => ({
     name: 'LeetCode',
-    filePathPattern: `leetcodes/*.mdx`,
+    filePathPattern: `leetcodes/**/*.mdx`,
     contentType: "mdx",
     bodyType: "none",
     fields: {

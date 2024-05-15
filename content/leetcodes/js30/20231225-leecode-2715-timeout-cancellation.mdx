@@ -1,0 +1,66 @@
+---
+title: 30 Days of Javascript - 2715. Timeout Cancellation
+description: Easy - 2715. Timeout Cancellation
+slug: timeout-cancellation
+date: 2023-12-25
+---
+
+## LeetCode 練習 - 2715. Timeout Cancellation
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一函式 **fn**、一個參數陣列 **args** 以及一個毫秒的timeout **t**，傳回一個取消函式 **cancelFn**。  
+
+在 **cancelTimeMs** 毫秒後，傳回取消函式 **cancelFn** 將被調用。  
+```
+setTimeout(cancelFn, cancelTimeMs)
+```
+最初函式 **fn** 的執行需被延遲 **t** 毫秒。  
+
+如果在 **t** 毫秒的延遲之前，函式 **cancelFn** 被調用，需取消 **fn** 的延遲執行。  
+如果在指定的延遲 **t** 內未調用 **cancelFn**，則 **fn** 應以 **args** 作為參數被執行。
+
+## 最終結果
+
+```js:timeout-cancellation.js
+/**
+ * @param {Function} fn
+ * @param {Array} args
+ * @param {number} t
+ * @return {Function}
+ */
+var cancellable = function(fn, args, t) {
+    const timer = setTimeout(() => {
+        fn(...args)
+    }, t);
+
+    return () => clearTimeout(timer);
+};
+
+/**
+ *  const result = [];
+ *
+ *  const fn = (x) => x * 5;
+ *  const args = [2], t = 20, cancelTimeMs = 50;
+ *
+ *  const start = performance.now();
+ *
+ *  const log = (...argsArr) => {
+ *      const diff = Math.floor(performance.now() - start);
+ *      result.push({"time": diff, "returned": fn(...argsArr)});
+ *  }
+ *       
+ *  const cancel = cancellable(log, args, t);
+ *
+ *  const maxT = Math.max(t, cancelTimeMs);
+ *           
+ *  setTimeout(cancel, cancelTimeMs);
+ *
+ *  setTimeout(() => {
+ *      console.log(result); // [{"time":20,"returned":10}]
+ *  }, maxT + 15)
+ */
+```
+
+## 解題思路
