@@ -1,0 +1,33 @@
+---
+title: 30 Days of Javascript - 2727. Is Object Empty
+description: Easy - 2727. Is Object Empty
+slug: is-object-empty
+date: 2023-12-29
+---
+
+## LeetCode 練習 - 2727. Is Object Empty
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一物件或陣列，傳回它是否為空。
+
+* 一個空物件不包含任何 **key-value**。
+* 一個空陣列不包含任何元素。  
+
+你可以假設物件或陣列是 **JSON.parse** 的輸出。
+
+## 最終結果
+
+```js:is-object-empty.js
+/**
+ * @param {Object|Array} obj
+ * @return {boolean}
+ */
+var isEmpty = function(obj) {
+    if(Array.isArray(obj)) return obj.length === 0 ? true : false;
+    if(typeof obj === 'object') return Object.keys(obj).length === 0 ? true : false;
+};
+```
+
+## 解題思路

@@ -1,0 +1,47 @@
+---
+title: 30 Days of Javascript - 2631. Group By
+description: Medium - 2631. Group By
+slug: group-by
+date: 2024-01-02
+---
+
+## LeetCode 練習 - 2631. Group By
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+
+寫一段程式碼，可以過增所有陣列，使你可以在任何陣列上調用 **array.groupBy(fn)** 方法，並傳回陣列的分組版本。
+
+一個分組過的陣列是一個物件，其中每個鍵是 **fn(arr[i])** 的輸出，每個值是包含原始陣列中具有該鍵的所有項目的陣列。
+
+提供的回調函式 **fn** 將接受陣列中的一個項目並傳回一個字符串鍵。
+
+每個值列表的順序應該是項目在陣列中出現的順序。鍵的任何順序都是可以接受的。
+
+請在不使用 **lodash** 中 **_.groupBy** 函式的情況下解決此問題。
+
+## 最終結果
+
+```js:group-by.js
+/**
+ * @param {Function} fn
+ * @return {Object}
+ */
+Array.prototype.groupBy = function(fn) {
+    return this.reduce((acc, item) => {
+        const key = fn(item);
+
+        if(!acc[key]) acc[key] = [];
+
+        acc[key].push(item);
+        return acc
+    }, {})
+};
+
+/**
+ * [1,2,3].groupBy(String) // {"1":[1],"2":[2],"3":[3]}
+ */
+```
+
+## 解題思路

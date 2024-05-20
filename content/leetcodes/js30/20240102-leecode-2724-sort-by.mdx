@@ -1,0 +1,32 @@
+---
+title: 30 Days of Javascript - 2724. Sort By
+description: Easy - 2724. Sort By
+slug: sort-by
+date: 2024-01-02
+---
+
+## LeetCode 練習 - 2724. Sort By
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+
+給一陣列 **arr** 和一個函式 **fn**，傳回一個排序過的陣列 **sortedArr**。您可以假設 **fn** 只傳回數字，這些數字決定了 **sortedArr** 的排序順序。**sortedArray** 必須按 **fn** 輸出的升序進行排序。
+
+你可以假設對於給定的陣列，**fn** 永遠不會傳回重複的數字。
+
+
+## 最終結果
+
+```js:sort-by.js
+/**
+ * @param {Array} arr
+ * @param {Function} fn
+ * @return {Array}
+ */
+var sortBy = function(arr, fn) {
+    return arr.sort((a, b) => fn(a) - fn(b));
+};
+```
+
+## 解題思路

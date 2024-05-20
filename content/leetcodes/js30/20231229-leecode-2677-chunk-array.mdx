@@ -1,0 +1,42 @@
+---
+title: 30 Days of Javascript - 2677. Chunk Array
+description: Easy - 2677. Chunk Array
+slug: chunk-array
+date: 2023-12-29
+---
+
+## LeetCode 練習 - 2677. Chunk Array
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一陣列 **arr** 和一個區塊大小 **size**，傳回一個區塊陣列。
+
+區塊陣列包含 **arr** 中的原始元素，但由長度為 **size** 的子陣列組成。如果 **arr.length** 不能被 **size** 整除，則最後一個子陣列的長度可能小於 **size**。
+
+你可以假設陣列是 **JSON.parse** 的輸出。換句話說，它是有效的 **JSON**。
+
+請在不使用 **lodash** 中 **_.chunk** 函數的情況下解決此問題。
+
+## 最終結果
+
+```js:chunk-array.js
+/**
+ * @param {Array} arr
+ * @param {number} size
+ * @return {Array}
+ */
+var chunk = function(arr, size) {
+    return arr.reduce((acc, curr, idx) => {
+        const chunkIdx = Math.floor(idx / size);
+
+        if(!acc[chunkIdx]) acc[chunkIdx] = [];
+
+        acc[chunkIdx].push(curr);
+        
+        return acc;
+    }, [])
+};
+```
+
+## 解題思路
