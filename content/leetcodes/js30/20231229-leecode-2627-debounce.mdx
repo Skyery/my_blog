@@ -1,0 +1,47 @@
+---
+title: 30 Days of Javascript - 2627. Debounce
+description: Medium - 2627. Debounce
+slug: debounce
+date: 2023-12-29
+---
+
+## LeetCode 練習 - 2627. Debounce
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一函式 **fn** 和一個毫秒單位的時間 **t**，傳回這個函式的 **debounce** 版本。
+
+ **debounce** 函式會在延遲 **t** 毫秒後執行的函式，如果在這段時間內再次被調用，它的執行會被取消。 **debounce** 函式還應該接受傳入的參數。
+
+例如，假設 **t** = 50 毫秒，函式在 30 毫秒、60 毫秒和 100 毫秒時被調用。
+
+前兩次函式調用會被取消，而第三次函式調用會在 150 毫秒時執行。
+
+如果 **t** = 35 毫秒，第一次調用會被取消，第二次會在 95 毫秒時執行，第三次會在 135 毫秒時執行。
+
+## 最終結果
+
+```js:debounce.js
+/**
+ * @param {Function} fn
+ * @param {number} t milliseconds
+ * @return {Function}
+ */
+var debounce = function(fn, t) {
+    let timer = null;
+    return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), t);
+    }
+};
+
+/**
+ * const log = debounce(console.log, 100);
+ * log('Hello'); // cancelled
+ * log('Hello'); // cancelled
+ * log('Hello'); // Logged at t=100ms
+ */
+```
+
+## 解題思路
