@@ -1,0 +1,53 @@
+---
+title: 30 Days of Javascript - 2695. Array Wrapper
+description: Easy - 2695. Array Wrapper
+slug: array-wrapper
+date: 2024-01-02
+---
+
+## LeetCode 練習 - 2695. Array Wrapper
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+
+創建一個 **ArrayWrapper Class**，它在構造函式中接受一個整數陣列。這個 **Class** 應該具有兩個功能：
+
+* 當這個 **Class** 的兩個實例用 **+** 運算符相加時，結果應該是兩個陣列中所有元素的總和。
+* 當對調用 **String()** 函式時，它應傳回一個用逗號分隔並被中括號括起來的字串。例如，[1,2,3]。
+
+## 最終結果
+
+```js:array-wrapper.js
+/**
+ * @param {number[]} nums
+ * @return {void}
+ */
+var ArrayWrapper = function(nums) {
+    this.nums = nums;
+};
+
+/**
+ * @return {number}
+ */
+ArrayWrapper.prototype.valueOf = function() {
+    return this.nums.reduce((a, b) => a + b, 0);
+}
+
+/**
+ * @return {string}
+ */
+ArrayWrapper.prototype.toString = function() {
+    return JSON.stringify(this.nums);
+}
+
+/**
+ * const obj1 = new ArrayWrapper([1,2]);
+ * const obj2 = new ArrayWrapper([3,4]);
+ * obj1 + obj2; // 10
+ * String(obj1); // "[1,2]"
+ * String(obj2); // "[3,4]"
+ */
+```
+
+## 解題思路
