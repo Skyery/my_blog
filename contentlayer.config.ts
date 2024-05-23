@@ -1,3 +1,4 @@
+import remarkGfm from 'remark-gfm';
 import rehypeCodeTitles from 'rehype-code-titles';
 import rehypePrism from 'rehype-prism-plus';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
@@ -72,6 +73,9 @@ export default makeSource({
     contentDirPath: 'content',
     documentTypes: [Post, LeetCode],
     mdx: {
+        remarkPlugins:[
+            remarkGfm,
+        ],
         rehypePlugins: [
             rehypeSlug,
             rehypeCodeTitles,
