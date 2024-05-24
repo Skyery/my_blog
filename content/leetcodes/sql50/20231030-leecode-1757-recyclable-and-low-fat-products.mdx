@@ -12,15 +12,15 @@ date: 2023-10-30
 ## 題目分析
 
 Table: **Products**
-| Column | Type |
-| ---------- | ---- |
-| product_id | int  |
-| low_fats   | enum |
-| recyclable | enum |  
-
-**product_id** 是此表的主鍵（具有唯一值的列）。  
-**low_fats** 是一個 **ENUM** 類型，值為 ('Y', 'N')，其中 'Y' 表示該產品是低脂肪的，'N' 表示不是低脂肪的。  
-**recyclable** 是一個 **ENUM** 類型，值為 ('Y', 'N')，其中 'Y' 表示該產品是可回收的，'N' 表示不可回收的。  
+> | Column | Type |
+> | ---------- | ---- |
+> | product_id | int  |
+> | low_fats   | enum |
+> | recyclable | enum |  
+> 
+> **product_id** 是此表的主鍵（具有唯一值的列）。  
+> **low_fats** 是一個 **ENUM** 類型，值為 ('Y', 'N')，其中 'Y' 表示該產品是低脂肪的，'N' 表示不是低脂肪的。  
+> **recyclable** 是一個 **ENUM** 類型，值為 ('Y', 'N')，其中 'Y' 表示該產品是可回收的，'N' 表示不可回收的。  
 
 寫一個解決方案來查找既是低脂肪又是可回收的產品的 **id**。  
 
