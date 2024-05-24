@@ -1,0 +1,62 @@
+---
+title: SQL 50 - 197. Rising Temperature
+description: Easy - 197. Rising Temperature
+slug: rising-temperature
+date: 2023-10-30
+---
+
+## LeetCode 練習 - 197. Rising Temperature
+> MySQL  
+> SQL 50 天系列
+
+## 題目分析
+
+Table: **Weather**
+> | Column Name   | Type    |
+> | ------------- | ------- |
+> | id            | int     |
+> | recordDate    | date    |
+> | temperature   | int     |
+>
+> **id** 是此表中具有唯一值的列。  
+> 不同的行沒有相同的 **recordDate**。  
+> 此表包含某一天的溫度信息。
+
+撰寫一個解決方案來查找所有溫度比前一天（昨天）高的日期的 **id**。
+
+以任何順序返回結果表。
+
+結果格式如下例所示。
+
+Example 1:  
+> Input:  
+> **Weather table**
+> | id | recordDate | temperature |
+> | -- | ---------- | ----------- |
+> | 1  | 2015-01-01 | 10          |
+> | 2  | 2015-01-02 | 25          |
+> | 3  | 2015-01-03 | 20          |
+> | 4  | 2015-01-04 | 30          |
+>
+> Output:
+> | id |
+> | -- |
+> | 2  |
+> | 4  |
+> 
+> Explanation:  
+> 在 2015-01-02，溫度比前一天高（10 -> 25）。  
+> 在 2015-01-04，溫度比前一天高（20 -> 30）。
+
+## 最終結果
+
+```js:rising-temperature.sql
+# Write your MySQL query statement below
+SELECT
+    w1.id
+FROM Weather w1, Weather w2
+WHERE DATEDIFF(w1.recordDate, w2.recordDate) = 1
+    AND w1.temperature > w2.temperature;
+```
+
+## 解題思路
