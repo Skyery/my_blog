@@ -1,0 +1,165 @@
+---
+title: JS 常用工具
+description: 工作上常用的方法集合。
+slug: usefully-js
+date: 2022-03-21
+---
+
+## 正則式
+
+### 取出括號以外的字串
+```js:usefully-js.js
+.match(/^(.*?)\s*\(/)[1]
+```
+
+### 取出 Email
+```js:usefully-js.js
+.match(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/)
+```
+
+### 取出 URL
+```js:usefully-js.js
+.match(/^(http(s)?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/)
+```
+
+### 取出 Nnumber
+```js:usefully-js.js
+.match(/^-?\d+(\.\d+)?$/)
+```
+
+### 取出 YYYY-MM-DD
+```js:usefully-js.js
+.match(/^\d{4}-\d{2}-\d{2}$/)
+```
+
+### 取出 中文字
+```js:usefully-js.js
+.match(/[\u4e00-\u9fa5]/)
+```
+
+### 取出 英文字
+```js:usefully-js.js
+.match(/^[A-Za-z]+$/)
+```
+
+### 取出 HTML Tag
+```js:usefully-js.js
+.match(/<("[^"]*"|'[^']*'|[^'">])*>/)
+```
+
+### 取出 IPv4
+```js:usefully-js.js
+.match(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/)
+```
+
+## 工具函式
+
+### HTML 編碼
+```js:usefully-js.js
+// JQuery required
+const htmlEncode = (value) => $('<div/>').text(value).html();
+
+// Pure JS
+const htmlEncode = (value) => {
+    const div = document.createElement('div');
+    div.innerText = value;
+    return div.innerHTML;
+}
+```
+
+### HTML 解碼
+```js:usefully-js.js
+// JQuery required
+const htmlDecode = (value) => $('<div/>').html(value).text();
+
+// Pure JS
+const htmlDecode = (value) => {
+    const div = document.createElement('div');
+    div.innerHTML = value;
+    return div.textContent || div.innerText || '';
+}
+```
+
+### 西元年轉民國年
+```js:usefully-js.js
+const toRPC = (year) => year < 1912 ? 0 : year - 1911;
+```
+
+### 字串駝峰轉蛇式
+```js:usefully-js.js
+const camelToSnake = (camelCase) => camelCase.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+```
+
+### 四捨五入至小數點第幾位數
+```js:usefully-js.js
+const roundTo = (num, decimal) => Math.round((num + Number.EPSILON) * Math.pow(10, decimal)) / Math.pow(10, decimal);
+```
+
+### Blob轉File
+```js:usefully-js.js
+const blobToFile = (blob) => return new File([blob], "fileName.ext", { type: "mime/type", lastModified: new Date().getTime() })
+```
+
+### LocalStorage 工具
+```js:usefully-js.js
+const ls = {
+    key: idx => localStorage.key(idx) || "",
+    get: (key, def) => localStorage.getItem(key) || def || "",
+    getJSON(key, def = {}) {
+        try {
+            const val = this.get(key)
+            return val ? JSON.parse(val) : def
+        }
+        catch (e) { return def }
+    },
+    set: (key, val) => localStorage.setItem(key, val),
+    setJSON(key, val) {
+        return this.set(key, JSON.stringify(val))
+    },
+    updJSON(source, target = {}, max) {
+        max = typeof max === "number" ? ~~max : 3
+        const updVal = (source = {}, target = {}, lv = 1) => {
+            for (const key of Object.keys(target)) {
+                let val = target[key]
+                if (val instanceof Object && !(val instanceof Array) && lv <= max) {
+                    val = updVal(source[key], val, lv + 1)
+                }
+                source[key] = val
+            }
+            return source
+        }
+        const json = updVal(typeof source === "string" ? this.getJSON(source) : source, target, 1)
+        return typeof source === "string" ? this.setJSON(source, json) : source
+    },
+    rm: key => localStorage.removeItem(key),
+    clear: _ => localStorage.clear(),
+    get target() { return localStorage },
+    get length() { return localStorage.length },
+};
+```
+
+### 敏感資料遮蔽
+```js:usefully-js.js
+/**
+ * 敏感資料遮蔽
+ * @param {String} str - 需要遮蔽的字串
+ * @param {String} maskSymbol - 遮蔽符號，預設 "*"
+ * @param {String, Regex} separator - 該字串是否需要切割，可傳入符號或陣則
+ * @param {String} joinSymbol - 合併符號，預設空白
+ * @returns {String}
+ */
+const getMaskedString = (str, maskSymbol = "*", separator = "", joinSymbol = " ") =>{
+	const getSplitStr = _ => str.split(separator);
+
+	return !separator
+		? str.replace(str.substr(Math.round((str.length - Math.round(str.length / 2)) / 2), str.length - Math.round(str.length / 2)), maskSymbol.repeat(str.length - Math.round(str.length / 2)))
+		: getSplitStr().map(s => s.replace(s.substr(Math.round((s.length - Math.round(s.length / 2)) / 2), s.length - Math.round(s.length /2)), maskSymbol.repeat(s.length - Math.round(s.length /2)))).join(joinSymbol);
+}
+```
+
+## 第三方套件
+
+* [JQuery - JS函式庫](https://jquery.com/)
+* [Day.js - 輕量級時間日期函式庫](https://day.js.org/en/)
+* [Toastr - 吐司訊息](https://codeseven.github.io/toastr/)
+* [Jodit Editor - 文本編輯工具](https://xdsoft.net/jodit/)
