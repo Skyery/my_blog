@@ -1,0 +1,61 @@
+---
+title: SQL 常用工具
+description: 工作上常用的 Query 集合。
+slug: usefully-sql
+date: 2022-03-21
+---
+
+## SQL 方法
+
+### EXPLAIN
+> Query 語句分析 - 常用來檢查 Key 的綁定有效與否。
+```sql:usefully-sql.sql
+EXPLAIN
+SELECT ..
+```
+
+### 關閉資料庫安全操作
+```sql:usefully-sql.sql
+-- 0: 關閉 | 1: 開啟
+SET SQL_SAFE_UPDATES = 0;
+```
+
+### 顯示資料庫正在執行的程序
+> 當執行程序卡死的時候會需要手動查詢及刪除執行程序。  
+```sql:usefully-sql.sql
+-- 查詢執行中程序
+SHOW PROCESSLIST;
+
+-- 刪除執行程序
+KILL <processid>;
+```
+
+### 查詢資料庫資料表資訊
+```sql:usefully-sql.sql
+SELECT *
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA='<your_schema>';
+```
+
+### 查詢資料表欄位資訊
+```sql:usefully-sql.sql
+SELECT *
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = '<your_schema>' AND TABLE_NAME = '<your_table>';
+```
+
+## Query 語句
+
+### 搜尋結果加上 Row Number
+```sql:usefully-sql.sql
+SELECT (@row_number:=@row_number + 1) 'num', <other_columns> ..
+FROM <your_table>,(SELECT @row_number:= 0) AS t WHERE ..
+```
+
+### 查詢欄位是否有重複資料
+```sql:usefully-sql.sql
+SELECT COUNT(<your_column>) AS count_duplicates
+FROM <your_table>
+GROUP BY <your_column>
+HAVING count_duplicates > 1;
+```

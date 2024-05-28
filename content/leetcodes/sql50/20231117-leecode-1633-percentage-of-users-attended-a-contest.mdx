@@ -1,0 +1,91 @@
+---
+title: SQL 50 - 1633. Percentage of Users Attended a Contest
+description: Easy - 1633. Percentage of Users Attended a Contest
+slug: percentage-of-users-attended-a-contest
+date: 2023-11-17
+---
+
+## LeetCode 練習 - 1633. Percentage of Users Attended a Contest
+> MySQL  
+> SQL 50 天系列
+
+## 題目分析
+
+Table: **Users**
+> | Column Name | Type    |
+> | ----------- | ------- |
+> | user_id     | int     |
+> | user_name   | varchar |
+>
+> **user_id** 是這個表格的主鍵（具有唯一值的列）。  
+> 這個表格的每一行包含一個用戶的名稱和 **ID**。
+
+Table: **Employee**
+> | Column Name      | Type    |
+> | ---------------- | ------- |
+> | employee_id      | int     |
+> | name             | varchar |
+> | experience_years | int     |
+>
+> **(contest_id, user_id)** 是這個表格的主鍵（唯一值組合列）。  
+> 這個表格的每一行包含用戶的 **ID** 和他們註冊的比賽。
+
+寫一個解決方案，找出每個比賽中註冊用戶的百分比，並四捨五入到小數點後兩位。
+
+返回的結果表按照百分比降序排列。如果有並列，按 **contest_id** 升序排列。
+
+結果格式如下例所示。
+
+Example 1:  
+> Input:  
+> **Users table**
+> | user_id | user_name |
+> | ------- | --------- |
+> | 6       | Alice     |
+> | 2       | Bob       |
+> | 7       | Alex      |
+> 
+> **Register table**
+> | contest_id | user_id |
+> | ---------- | ------- |
+> | 215        | 6       |
+> | 209        | 2       |
+> | 208        | 2       |
+> | 210        | 6       |
+> | 208        | 6       |
+> | 209        | 7       |
+> | 209        | 6       |
+> | 215        | 7       |
+> | 208        | 7       |
+> | 210        | 2       |
+> | 207        | 2       |
+> | 210        | 7       |
+> 
+> Output:
+> | contest_id | percentage |
+> | ---------- | ---------- |
+> | 208        | 100.0      |
+> | 209        | 100.0      |
+> | 210        | 100.0      |
+> | 215        | 66.67      |
+> | 207        | 33.33      |
+>
+> Explanation:  
+> 所有註冊了比賽 **208、209** 和 **210** 的用戶。百分比為 **100%**，我們按升序排列在答案表中。  
+> **Alice** 和 **Alex** 註冊了比賽 **215**，百分比為 **((2/3) * 100) = 66.67%**。  
+> **Bob** 註冊了比賽 **207**，百分比為 **((1/3) * 100) = 33.33%**。
+
+## 最終結果
+
+```js:percentage-of-users-attended-a-contest.sql
+# Write your MySQL query statement below
+SELECT
+    contest_id
+    , ROUND(COUNT(DISTINCT user_id) * 100 / u.total_count, 2) AS percentage
+FROM Register AS r
+JOIN (SELECT COUNT(DISTINCT user_id) AS total_count FROM Users) AS u
+GROUP BY contest_id
+ORDER BY percentage DESC, contest_id;
+```
+
+## 解題思路

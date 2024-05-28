@@ -1,0 +1,320 @@
+---
+title: 撲克牌遊戲 - 牌組
+description: 透過JS實作產生牌組、比大小等基本功能。
+slug: poker-deck
+date: 2023-02-04
+---
+
+## 簡述
+因為某一農曆年假前，
+主管靈光一閃的提出想透過物連網方式來做撲克牌遊戲。  
+雖然到最後並沒有真的成立這個專案，
+但我還是嘗試將我認為的基本功能給寫了出來，也以此作為練習。
+
+## 程式碼
+
+### Main Class
+```js:Deck.js
+export default class Deck{
+    constructor(num_card_in_hand = 2){
+        this.DECK;
+        this.NUM_CARDS_IN_DECK = 52;
+        this.NUM_VALUES_IN_DECK = 13;
+        this.NUM_SUITS_IN_DECK = 4;
+        this.NUM_CARDS_IN_HAND = num_card_in_hand;
+        this.ACE_VALUE = Math.pow(2, 13);
+        this.STRAIGHT_LOW_ACE_INDICATOR = parseInt("10000000011110", 2);
+        this.TEN_CARD_POSITION = 8;
+        this.RANK_BASE_VALUE = Math.pow(10, 9);
+        this.NUMBERS = "23456789TJQKA";
+        this.SUITS = ['c', 'd', 'h', 's'];
+
+        this.buildDeck();
+    }
+
+    get deck() {
+        return this.DECK;
+    }
+
+    // 建立牌組並透過 Fisher-Yates、Swap 打亂。
+    buildDeck(){
+        let deck = Array.from(new Array(this.NUM_CARDS_IN_DECK), (_, idx) => idx)
+        let count = this.NUM_CARDS_IN_DECK + 1;
+        let currIdx = this.NUM_CARDS_IN_DECK, randIdx;
+        while((count -= 1)){
+            deck.push(deck.splice(Math.floor(Math.random() * count), 1)[0]);
+        }
+        while((currIdx -= 1)){
+            randIdx = Math.floor(Math.random() * currIdx);
+            [deck[currIdx], deck[randIdx]] = [deck[randIdx], deck[currIdx]];
+        }
+        this.DECK = deck;
+    }
+
+    // 小到大排列手牌
+    sortHand(hand){
+        let sortedHand = [];
+        for(let i = 0; i < this.NUMBERS.length; i++){
+            let tempArr = []
+            for(let j = 0; j < hand.length; j++){
+                if(this.NUMBERS[i] === hand[j].charAt(0)){
+                    tempArr.push(hand[j]);
+                }
+            }
+            if(tempArr.length != 0) sortedHand.push(tempArr.sort((a, b) => [...a][1].charCodeAt(0) - [...b][1].charCodeAt(0)));
+        }
+        return sortedHand.join().split(",");
+    }
+
+    // 將手牌轉為字串
+    handDisplay(hand, sort = true){
+        return sort 
+            ? this.sortHand(hand.reduce((obj, item) =>{
+                obj.push(`${this.NUMBERS[item % this.NUM_VALUES_IN_DECK]}${this.SUITS[Math.floor(item / this.NUM_VALUES_IN_DECK)]}`);
+                return obj;
+            }, []))
+            : hand.reduce((obj, item) =>{
+                obj.push(`${this.NUMBERS[item % this.NUM_VALUES_IN_DECK]}${this.SUITS[Math.floor(item / this.NUM_VALUES_IN_DECK)]}`);
+                return obj;
+            }, []);
+    }
+
+    // 是否為同花順
+    isStraightFlush(hand, len, returnResult = false){
+        let m, g, result = [], suits = [...this.SUITS.join('')]
+
+        suits.filter((s) => {
+            let arr = []
+            hand.map((c) => {
+                const match = ( c.match(s) && 2<<this.NUMBERS.search(c[0]) )
+                if(match) arr.push(c);
+                return m = m | match
+            }, m=0)
+            const isS = (g=k=>k&&1+g(k&k/2))(m|m>>13)===len
+            if(isS) result.push(arr)
+        })
+
+        return returnResult
+            ? result
+            : [...this.SUITS.join('')].some(s=>hand.map(c=>m|=c.match(s)&&2<<this.NUMBERS.search(c[0]),m=0)|(g=k=>k&&1+g(k&k/2))(m|m>>13)===len);
+    }
+
+    // 是否為順子
+    isStraight(hand, len = 5){
+        let m, g
+        return !!Number(hand.map(c=>m|=2<<this.NUMBERS.search(c[0]),m=0)|(g=k=>k&&1+g(k&k/2))(m|m>>13)>=len);
+    }
+
+    // 是否為同花
+    isFlush(hand, len = 5, returnResult = false){
+        return returnResult
+            ? [...this.SUITS.join('')].map(s => 
+                hand.map(c => (c.match(s) && 2<<this.NUMBERS.search(c[0])) ? c : "").filter(String).length >= len
+                    ? hand.map(c => (c.match(s) && 2<<this.NUMBERS.search(c[0])) ? c : "").filter(String) : "").filter(String)
+            : [...this.SUITS.join('')].some(s => hand.map(c => (c.match(s) && 2<<this.NUMBERS.search(c[0])) ? c : "").filter(String).length >= len);
+    }
+
+    // 回傳手牌資訊
+    rankHand(hand){
+        const suits = new Array(this.NUM_SUITS_IN_DECK).fill(0);
+        const values = new Array(this.NUM_VALUES_IN_DECK).fill(0);
+
+        hand.forEach((card) => {
+            suits[Math.floor(card / this.NUM_VALUES_IN_DECK)] += 1;
+            values[card % this.NUM_VALUES_IN_DECK] += 1;
+        });
+
+        let rankValue = values.reduce((total, val, idx) => (total += ((val === 1 && Math.pow(2, idx + 1)) || 0) + ((val > 1 && Math.pow(2, idx + 1) * this.ACE_VALUE * val) || 0)), 0);
+        const firstCardIdx = values.findIndex((idx) => idx === 1);
+        const ranks = {
+            royal_flush: false,
+            straight_flush: this.isStraightFlush(this.handDisplay(hand), hand.length),
+            quads: values.some((count) => count === 4),
+            full_house: false,
+            flush: suits.some((count) => count >= 5),
+            straight: this.isStraight(this.handDisplay(hand), hand.length),
+            trips: values.some((count) => count === 3),
+            two_pairs: values.filter((count) => count === 2).length >= 2,
+            pair: values.filter((count) => count === 2).length >= 1,
+            high_card: true
+        }
+        
+        ranks.full_house = ranks.trips && ranks.pair;
+        ranks.royal_flush = ranks.straight_flush && firstCardIdx === this.TEN_CARD_POSITION;
+
+        let rankIdx = 0;
+        let rankDescription = "";
+        let rankStage = 0;
+        
+        Object.keys(ranks).every((key, idx) => {
+            rankIdx = 10 - idx;
+            rankDescription = key;
+            rankStage = idx;
+            return !ranks[key];
+        });
+
+        rankValue += rankIdx * this.RANK_BASE_VALUE - ((rankValue === this.STRAIGHT_LOW_ACE_INDICATOR && this.ACE_VALUE - 1) || 0);
+        rankDescription = rankDescription.split("_").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+        return {
+            hand,
+            suits,
+            values,
+            rankValue,
+            ranks,
+            rankDescription,
+            rankStage,
+            display: this.handDisplay(hand).join(),
+        };
+    }
+
+    rawHand(hand){
+        return hand.map((item) => this.NUMBERS.indexOf(item[0]) + (this.SUITS.indexOf(item[1]) * this.NUM_VALUES_IN_DECK))
+    }
+
+    // 比牌 - 目前只支援[3V3, 5V5, 7V7]
+    compare({ hand_a, hand_b }){
+        if(hand_a.length !== hand_b.length) throw new Error(`兩墩手牌數量不相同`);
+        if(![3, 5, 7].includes(hand_a.length) || ![3, 5, 7].includes(hand_b.length)) throw new Error(`手牌數不等於 3V3、5V5、7V7`);
+
+        const rank_a = this.rankHand(this.rawHand(hand_a));
+        const rank_b = this.rankHand(this.rawHand(hand_b));
+        
+        // For Debug
+        console.log(rank_a);
+        console.log(rank_b);
+
+        if(hand_a.length === 3 && hand_b.length === 3){
+            rank_a.rankStage = rank_a.rankStage < 5 ? 8 : rank_a.rankStage;
+            rank_b.rankStage = rank_b.rankStage < 5 ? 8 : rank_b.rankStage;
+        }
+        if(rank_a.rankStage < rank_b.rankStage) return "true";
+        if(rank_a.rankStage > rank_b.rankStage) return "false";
+        if(rank_a.rankStage === rank_b.rankStage){
+            switch(rank_a.rankStage){
+                case 1: // 同花順
+                    const SFNum_1 = rank_a.values.map((v, i) => v != 0 ? i : '').filter(String);
+                    const SFNum_2 = rank_b.values.map((v, i) => v != 0 ? i : '').filter(String);
+                    if(
+                        ((SFNum_1[SFNum_1.length - 1] === 12 && SFNum_1[0] === 8) && (SFNum_2[SFNum_2.length - 1] === 12 && SFNum_2[0] === 8)) ||
+                        (SFNum_1[SFNum_1.length - 1] != 12 && SFNum_2[SFNum_2.length - 1] != 12) ||
+                        (SFNum_1.length == SFNum_2.length) && SFNum_1.every((c, i) => c === SFNum_2[i])
+                    ){
+                        return (parseInt(Math.max(...SFNum_1)) === parseInt(Math.max(...SFNum_2)))
+                            ? "draw"
+                            : (parseInt(Math.max(...SFNum_1)) > parseInt(Math.max(...SFNum_2)))
+                                ? "true"
+                                : "false";
+                    }else{
+                        return (SFNum_1[0] === 8) ? "true" : "false";
+                    }
+                case 2: // 鐵支 
+                    const QDNum_1 = rank_a.values.map((v, i) => v === 4 ? i : '').filter(String);
+                    const QDNum_2 = rank_b.values.map((v, i) => v === 4 ? i : '').filter(String);
+                    return (parseInt(Math.max(...QDNum_1)) > parseInt(Math.max(...QDNum_2)))
+                            ? "true"
+                            : "false";
+                case 3: // 葫蘆
+                    const FHNum_1 = rank_a.values.map((v, i) => v === 3 ? i : '').filter(String);
+                    const FHNum_2 = rank_b.values.map((v, i) => v === 3 ? i : '').filter(String);
+                    return (parseInt(Math.max(...FHNum_1)) > parseInt(Math.max(...FHNum_2)))
+                            ? "true"
+                            : "false";
+                case 4: // 同花
+                    const FLNum_1 = rank_a.values.map((v, i) => v != 0 ? i : '').filter(String);
+                    const FLNum_2 = rank_b.values.map((v, i) => v != 0 ? i : '').filter(String);
+                    for(let i = 1; i <= FLNum_1.length; i++){
+                        if(FLNum_1[FLNum_1.length - i] === FLNum_2[FLNum_2.length - i]) continue;
+                        if(FLNum_1[FLNum_1.length - i] > FLNum_2[FLNum_2.length - i]) return "true";
+                        if(FLNum_1[FLNum_1.length - i] < FLNum_2[FLNum_2.length - i]) return "false";
+                    }
+                    return "draw"
+                case 5: // 順子
+                    const STNum_1 = rank_a.values.map((v, i) => v != 0 ? i : '').filter(String);
+                    const STNum_2 = rank_b.values.map((v, i) => v != 0 ? i : '').filter(String);
+                    if(
+                        ((STNum_1[STNum_1.length - 1] === 12 && STNum_1[0] === 8) && (STNum_2[STNum_2.length - 1] === 12 && STNum_2[0] === 8)) ||
+                        (STNum_1[STNum_1.length - 1] != 12 && STNum_2[STNum_2.length - 1] != 12) ||
+                        (STNum_1.length == STNum_2.length) && STNum_1.every((c, i) => c === STNum_2[i])
+                    ){
+                        return (parseInt(Math.max(...STNum_1)) === parseInt(Math.max(...STNum_2)))
+                            ? "draw"
+                            : (parseInt(Math.max(...STNum_1)) > parseInt(Math.max(...STNum_2)))
+                                ? "true"
+                                : "false";
+                    }else{
+                        return (STNum_1[0] === 8) ? "true" : "false";
+                    }
+                case 6: // 三條
+                    const TRNum_1 = rank_a.values.map((v, i) => v === 3 ? i : '').filter(String);
+                    const TRNum_2 = rank_b.values.map((v, i) => v === 3 ? i : '').filter(String);
+                    return (parseInt(Math.max(...TRNum_1)) > parseInt(Math.max(...TRNum_2)))
+                            ? "true"
+                            : "false";
+                case 7: // 兩對
+                    const DPNum_1 = rank_a.values.map((v, i) => v === 2 ? i : '').filter(String);
+                    const DPNum_2 = rank_b.values.map((v, i) => v === 2 ? i : '').filter(String);
+                    for(let i = 1; i <= DPNum_1.length; i++){
+                        if(DPNum_1[DPNum_1.length - i] === DPNum_2[DPNum_2.length - i]) continue;
+                        if(DPNum_1[DPNum_1.length - i] > DPNum_2[DPNum_2.length - i]) return "true";
+                        if(DPNum_1[DPNum_1.length - i] < DPNum_2[DPNum_2.length - i]) return "false";
+                    }
+                    return "draw";
+                case 8: // 對子
+                    const PRNum_1 = rank_a.values.map((v, i) => v === 2 ? i : '').filter(String);
+                    const PRNum_2 = rank_b.values.map((v, i) => v === 2 ? i : '').filter(String);
+                    return (parseInt(Math.max(...PRNum_1)) > parseInt(Math.max(...PRNum_2)))
+                            ? "true"
+                            : (parseInt(Math.max(...PRNum_1)) < parseInt(Math.max(...PRNum_2)))
+                                ? "false"
+                                : "draw";
+                case 9: // 烏龍
+                    const num_1 = rank_a.hand.at(-1);
+                    const num_2 = rank_b.hand.at(-1);
+
+                    return num_1 === num_2 ? "draw" : num_1 > num_2 ? "true" : "false";
+            }
+        }
+    }
+
+    // 抽牌
+    drawCard(){
+        const result = [];
+        let i = this.NUM_CARDS_IN_HAND < 2 ? 2 : this.NUM_CARDS_IN_HAND + 1;
+
+        while(i -= 1){
+            result.push(this.DECK.pop());
+        }
+        return this.rankHand(result);
+    }
+}
+```
+
+### Usage
+```html:index.html
+...
+<script type="module">
+    import Deck from '/js/Deck.js';
+
+    (() => {
+        // 建立牌組類，並指定一次抽出5張牌
+        const deck = new Deck(5);
+
+        // 抽出兩組手牌
+        const handCards_a = deck.drawCard();
+        const handCards_b = deck.drawCard();
+
+        // 輸出手牌
+        const hand_a = handCards_a.display.split(",");
+        const hand_b = handCards_b.display.split(",");
+        console.log(hand_a);
+        console.log(hand_b);
+
+        // hand_a 是否大過 hand_b
+        console.log(deck.compare({
+            hand_a,
+            hand_b,
+        }));
+    })()
+</script>
+...
+```
