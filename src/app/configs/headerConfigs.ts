@@ -3,6 +3,6 @@ export const headerConfigs = {
     navLinks: [
         { href: '/', title: '文章' },
         { href: '/leetcodes', title: 'LeetCode' },
-        // { href: '/about', title: '關於' },
+        { href: '/about', title: '關於' },
     ],
 };

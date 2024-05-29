@@ -6,6 +6,7 @@ import rehypeSlug from 'rehype-slug';
 import imageMetadata from './src/app/plugins/imageMetadata';
 
 import { defineDocumentType, makeSource } from 'contentlayer/source-files';
+import { exportTraceState } from 'next/dist/trace';
 
 export const Post = defineDocumentType(() => ({
     name: 'Post',

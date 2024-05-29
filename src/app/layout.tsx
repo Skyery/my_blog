@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
     title: "Jason's Blog",
-    description: "這裡是我用來紀錄工作或自學網站技術的點滴和感想",
+    description: "這裡是紀錄我自學及工作上點點滴滴的筆記本。",
 };
 
 export default function RootLayout({
