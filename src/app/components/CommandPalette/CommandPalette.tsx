@@ -1,5 +1,8 @@
 'use client';
 
+import { allPosts, type Post } from "contentlayer/generated";
+import { allLeetCodes, type LeetCode } from "contentlayer/generated";
+import { compareDesc, format, parseISO } from "date-fns";
 import {
     HomeIcon,
     LightBulbIcon,
@@ -29,6 +32,7 @@ interface ResultItemProps {
     currentRootActionId: ActionId;
 }
 type Ref = HTMLDivElement;
+type CombinedType = Post & LeetCode;
 
 const ResultItem = forwardRef<Ref, ResultItemProps>(
     (
@@ -99,7 +103,7 @@ const ResultItem = forwardRef<Ref, ResultItemProps>(
 )
 
 const RenderResults = () => {
-    const { results, rootActionId } = useMatches();    
+    const { results, rootActionId } = useMatches();
 
     return (
         <KBarResults
@@ -141,6 +145,19 @@ export default function CommandPalette({
 }) {
     const router = useRouter();
     const { setTheme } = useTheme();
+
+    const allPostForCommandActions = allPosts.concat(allLeetCodes as CombinedType[])
+        .sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
+        .map(({ slug, title, path }) => {
+            return {
+                id: slug,
+                name: title,
+                perform: () => router.push(path),
+                section: '搜尋文章',
+                parent: 'search-posts',
+            }
+        });
+
     const actions = [
         // Page section
         {
@@ -155,14 +172,15 @@ export default function CommandPalette({
             },
         },
         // Operation section
-        // {
-        //     id: 'search-posts',
-        //     name: '文章',
-        //     keywords:
-        //       'search find posts writing words blog articles thoughts 搜尋 尋找 文章 寫作 部落格',
-        //     icon: <MagnifyingGlassIcon className="h-6 w-6" />,
-        //     section: '搜尋',
-        // },
+        {
+            id: 'search-posts',
+            name: '文章',
+            keywords:
+              'search find posts writing words blog articles thoughts 搜尋 尋找 文章 寫作 部落格',
+            icon: <MagnifyingGlassIcon className="h-6 w-6" />,
+            section: '搜尋',
+        },
+        ...allPostForCommandActions,
         // - Theme toggle
         {
             id: 'theme',

@@ -25,7 +25,7 @@ export default function LeetCode() {
                     </p>
                     
                     <p>
-                        就在這個時候找到了 <a href="https://easonchang.com/about">Eason Chang</a> 在 <a href="https://ithelp.ithome.com.tw/articles/10291960">iT邦幫忙</a> 上的分享文章。<br />
+                        就在這個時候找到了 <a href="https://easonchang.com/about" target="_blank">Eason Chang</a> 在 <a href="https://ithelp.ithome.com.tw/articles/10291960" target="_blank">iT邦幫忙</a> 上的分享文章。<br />
                         讓從沒碰過 React 的我，也能輕鬆的從零開始一步步完成這個網站。
                     </p>
 
