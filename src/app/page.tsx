@@ -18,8 +18,8 @@ export default function Home() {
         <>
             <div className="prose my-12 space-y-2 transition-colors dark:prose-invert md:prose-lg md:space-y-5">
                 <h1 className="text-center sm:text-left">你好，我是Jason Lin！</h1>
-                <p>我是一個半路出家，熱衷於學習新知的Mid-Level全端工程師。</p>
-                <p>這裡是我探索新知及工作上，紀錄經驗點點滴滴的筆記本。</p>
+                <p>我是個熱衷於學習新知、半路出家的Mid-Level全端工程師。</p>
+                <p>這裡是我探索新知及工作經驗的筆記本，紀錄點點滴滴的成長歷程。</p>
             </div>
 
             <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
