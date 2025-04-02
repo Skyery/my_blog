@@ -7,6 +7,23 @@ date: 2024-11-13
 
 ## TS 特殊型別 (Special Types)
 
+### enum
+
+`enum` 是一種特殊型別，用來定義一組具名常數。  
+它不是像 `string` 或 `number` 等基本型別，而是允許將一組常數進行命名，讓程式碼更加清晰和可讀。
+
+```ts
+enum Direction {
+    Up = "UP",
+    Down = "DOWN",
+    Left = "LEFT",
+    Right = "RIGHT"
+}
+
+const move: Direction = Direction.Up;
+console.log(move)   // "UP"
+```
+
 ### any
 
 any 類型表示可以是任何型別，放寬了 TypeScript 的類型檢查。  
