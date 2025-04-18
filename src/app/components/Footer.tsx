@@ -1,32 +1,15 @@
-import CustomLink from "./CustomLink/CustomLink";
-import SocialIcon from "@/app/components/SocialIcon/SocialIcon";
-import { footerConfigs } from "@/app/configs/footerConfigs";
+import React from 'react';
 
-export default function Footer() {
+const Footer = (): JSX.Element => {
     return (
-        <footer>
-            <div className="mt-16 flex flex-col items-center">
-                <div className="mb-3 flex space-x-4">
-                    <SocialIcon
-                        kind="mail"
-                        href={`mailto:${footerConfigs.socialLinks.email}`}
-                    />
-                    <SocialIcon kind="github" href={footerConfigs.socialLinks.github} />
-                    <SocialIcon
-                        kind="facebook"
-                        href={footerConfigs.socialLinks.facebook}
-                    />
-                    <SocialIcon
-                        kind="linkedin"
-                        href={footerConfigs.socialLinks.linkedin}
-                    />
-                    <SocialIcon kind="twitter" href={footerConfigs.socialLinks.twitter} />
-                </div>
-                <div className="mb-8 flex space-x-2 text-sm text-gray-500 transition-colors dark:text-gray-400">
-                    <div>{`Copyright © 2022 - ${new Date().getFullYear()}`}</div>
-                    <CustomLink href="/">{footerConfigs.credit}</CustomLink>
-                </div>
+        <footer className="bg-gray-100 dark:bg-gray-800 py-6 mt-12">
+            <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
+                <p>
+                    © {`Copyright © 2022 - ${new Date().getFullYear()}`} Jason Lin. All rights reserved.
+                </p>
             </div>
         </footer>
-    )
-}
+    );
+};
+
+export default Footer;

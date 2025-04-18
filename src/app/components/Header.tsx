@@ -1,45 +1,27 @@
-import ThemeSwitch from "@/app/components/ThemeSwitch";
-import SectionContainer from "@/app/components/SectionContainer";
-import CustomLink from "@/app/components/CustomLink/CustomLink";
-import MobileNav from "@/app/components/MobileNav";
-import CommandPaletteToggle from '@/app/components/CommandPaletteToggle';
-import { headerConfigs } from "@/app/configs/headerConfigs";
+import Link from 'next/link';
+import React from 'react';
 
-export default function Header() {
+const Header = (): JSX.Element => {
     return (
-        <header className="sticky top-0 z-10 border-b border-slate-900/10 bg-white/70 py-3 backdrop-blur transition-colors dark:border-slate-50/[0.06] dark:bg-gray-900/60">
-            <SectionContainer>
-                <div className="flex items-baseline justify-between">
-                    <div>
-                        <CustomLink href="/" aria-label={headerConfigs.title}>
-                            <div className="flex items-center justify-between">
-                                <div className="h-6 text-2xl font-semibold sm:block">
-                                    {headerConfigs.title}
-                                </div>
-                            </div>
-                        </CustomLink>
-                    </div>
-
-                    <div className="flex items-center text-base leading-5 sm:gap-1">
-                        <div className="hidden gap-1 sm:flex">
-                            {headerConfigs.navLinks.map((link) => (
-                                <CustomLink
-                                    key={link.title}
-                                    href={link.href}
-                                    className="rounded p-3 font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800"
-                                >
-                                    {link.title}
-                                </CustomLink>
-                            ))}
-                        </div>
-
-                        <ThemeSwitch />
-                        <CommandPaletteToggle />
-                        <MobileNav />
-                    </div>
+        <header className="bg-gray-100 dark:bg-gray-800 py-4">
+            <nav className="container mx-auto px-4 flex justify-between items-center">
+                <Link
+                    href="/"
+                    className="text-2xl font-bold text-gray-900 dark:text-white"
+                >
+                    我的新部落格
+                </Link>
+                <div>
+                    <Link
+                        href="/posts"
+                        className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2"
+                    >
+                        文章
+                    </Link>
                 </div>
-            </SectionContainer>
+            </nav>
         </header>
-    )
-}
+    );
+};
 
+export default Header;

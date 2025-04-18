@@ -1,18 +1,14 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import '@/app/styles/prism-dracula.css';
-import '@/app/styles/prism-plus.css';
-import '@/app/styles/nprogress-custom.scss';
-import { ThemeProviders, NprogressProvider } from "./providers";
-import LayoutWrapper from "./components/LayoutWrapper";
-import CommandPalette from '@/app/components/CommandPalette';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import Header from '@/app/components/Header';
+import Footer from '@/app/components/Footer';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: "Jason's Blog",
-    description: "這裡是紀錄我自學及工作上點點滴滴的筆記本。",
+    title: '我的新部落格',
+    description: '記錄技術與生活',
 };
 
 export default function RootLayout({
@@ -21,17 +17,15 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className="light" style={{ colorScheme: 'light' }}>
-            <body className={inter.className}>
-                <ThemeProviders>
-                    <CommandPalette>
-                        <NprogressProvider>
-                            <LayoutWrapper>
-                                {children}
-                            </LayoutWrapper>
-                        </NprogressProvider>
-                    </CommandPalette>
-                </ThemeProviders>
+        <html lang="zh-TW" className="light" style={{ colorScheme: 'light' }}>
+            <body
+                className={`${inter.className} bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200`}
+            >
+                <Header />
+                <main className="container mx-auto px-4 py-8 min-h-screen">
+                    {children}
+                </main>
+                <Footer />
             </body>
         </html>
     );

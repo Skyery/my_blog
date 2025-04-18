@@ -5,18 +5,21 @@ import { format } from 'date-fns';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-export default function Home(): JSX.Element {
-    // 獲取文章，過濾草稿並排序
+export const metadata = {
+    title: '所有文章',
+    description: '瀏覽所有已發布的文章',
+};
+
+export default function PostsPage() {
     const posts = allPosts
         .filter((post) => !isProduction || !post.draft)
         .sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)));
 
     return (
         <div>
-            <div className="prose dark:prose-invert max-w-none mb-12">
-                <h1>歡迎來到我的部落格</h1>
-                <p>這裡是最近發布的文章：</p>
-            </div>
+            <h1 className="text-3xl font-bold mb-8 border-b border-gray-200 dark:border-gray-700 pb-4">
+                所有文章
+            </h1>
 
             <div className="space-y-8">
                 {posts.length > 0 ? (
@@ -37,7 +40,7 @@ export default function Home(): JSX.Element {
                                 dateTime={post.date}
                                 className="text-sm text-gray-500 dark:text-gray-400 block mb-2"
                             >
-                                {format(new Date(post.date), 'yyyy年MM月dd日')}{' '}
+                                {format(new Date(post.date), 'yyyy年MM月dd日')}
                             </time>
                             <p className="text-gray-700 dark:text-gray-300 mb-4">
                                 {post.description}
