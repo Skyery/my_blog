@@ -3,12 +3,13 @@ title: '我的第一篇文章'
 date: 2025-04-18
 description: '這是新部落格架構的第一篇範例文章。'
 tags: ['介紹', 'Next.js']
-draft: false
+draft: true
 ---
 
 # 歡迎來到我的新部落格！
 
-這個部落格使用了 Next.js App Router、Tailwind CSS 和 Contentlayer。
+這個部落格使用了 `Next.js` App Router、Tailwind CSS 和 Contentlayer。  
+[超連結測試](www.google.com)
 
 ## 功能亮點
 
@@ -16,7 +17,7 @@ draft: false
 - 自動 Slug 生成
 - 漂亮的代碼高亮 (由 `rehype-pretty-code` 提供)
 
-```tsx
+```tsx:hello-world.tsx
 import React from 'react';
 
 function HelloWorld() {
@@ -24,6 +25,71 @@ function HelloWorld() {
 }
 
 export default HelloWorld;
+```
+
+```js showLineNumbers
+const a = 1;
+a = 2;
+```
+
+```tsx showLineNumbers {5,15-17}
+import "@/styles/globals.css";
+
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { ThemeProvider } from "next-themes";
+
+import LayoutWrapper from "@/components/LayoutWrapper";
+
+function MyApp({ Component, pageProps }: AppProps) {
+    return (
+    <ThemeProvider attribute="class">
+        <Head>
+        <meta name="viewport" content="viewport-fit=cover" />
+        </Head>
+        <LayoutWrapper>
+        <Component {...pageProps} />
+        </LayoutWrapper>
+    </ThemeProvider>
+    );
+}
+
+export default MyApp;
+```
+
+```diff showLineNumbers
+const a = 1;
+- a = 2;
++ a = 2;
+a = 3;
+```
+
+```shell
+$ echo "Hello world!"
+```
+
+```python
+print("Hello world!")
+```
+
+```java
+System.out.println("Hello world!");
+```
+
+```csharp
+Console.WriteLine("Hello world!");
+```
+
+```c
+printf("Hello world!");
+```
+
+```cpp
+std::cout << "Hello world!";
+```
+
+```go
+fmt.Println("Hello world!")
 ```
 
 希望你喜歡這裡！

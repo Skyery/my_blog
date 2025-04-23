@@ -1,0 +1,9 @@
+.bprogress {
+    .bar {
+        @apply h-1 bg-rose-500 !important;
+    }
+
+    .peg {
+        @apply shadow-[0_0_10px] shadow-rose-500 !important;
+    }
+}

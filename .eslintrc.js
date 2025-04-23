@@ -44,7 +44,7 @@ module.exports = {
             'error',
             { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
         ],
-        'prettier/prettier': 'error'
+        'prettier/prettier': 'off',
     },
     ignorePatterns: [
         'node_modules/',
