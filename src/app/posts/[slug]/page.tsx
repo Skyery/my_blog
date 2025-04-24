@@ -33,7 +33,7 @@ export async function generateMetadata({
     params: { slug: string };
 }): Promise<Metadata> {
     const post = await getPostFromParams(params.slug);
-    const siteUrl = 'https://localhost:3000';
+    const siteUrl = 'https://my-blog-three-ruddy.vercel.app/';
 
     if (!post) {
         return { title: '文章不存在' };

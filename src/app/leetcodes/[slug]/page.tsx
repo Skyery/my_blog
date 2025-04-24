@@ -32,7 +32,7 @@ export async function generateMetadata({
     params: { slug: string };
 }): Promise<Metadata> {
     const leetcode = await getLeetCodeFromParams(params.slug);
-    const siteUrl = 'https://localhost:3000';
+    const siteUrl = 'https://my-blog-three-ruddy.vercel.app/';
 
     if (!leetcode) {
         return { title: 'LeetCode 題目不存在' };
