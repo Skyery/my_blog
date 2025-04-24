@@ -1,0 +1,48 @@
+---
+title: Flatten Deeply Nested Array
+description: Medium - [JS 30] 2625. Flatten Deeply Nested Array
+date: 2024-01-03
+tags: []
+leetcodeID: 2625
+difficulty: Medium
+draft: false
+---
+
+## LeetCode 練習 - 2625. Flatten Deeply Nested Array
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+
+給一多維陣列 **arr** 和一個深度 **n**，返回該陣列的扁平化版本。
+
+多維陣列是一種遞迴數據結構，包含整數或其他多維陣列。
+
+扁平化陣列是一個版本的陣列，其中一些或所有子陣列被移除並替換為該子陣列中的實際元素。只有當當前的嵌套深度小於 **n** 時，才應進行此扁平化操作。第一個數組中的元素深度被認為是 **0**。
+
+請在不使用內建的 **Array.flat** 方法的情況下解決此問題。
+
+## 最終結果
+
+```js:flatten-deeply-nested-array.js
+/**
+ * @param {Array} arr
+ * @param {number} depth
+ * @return {Array}
+ */
+var flat = function (arr, n) {
+    if(n === 0) return arr;
+    let result = [];
+    const helper = (arr, n) => {
+        for (let i = 0; i < arr.length; i++) {
+            (n > 0 && Array.isArray(arr[i]))
+                ? helper(arr[i], n - 1)
+                : result.push(arr[i]);
+        }
+    }
+    helper(arr, n);
+    return result;
+};
+```
+
+## 解題思路

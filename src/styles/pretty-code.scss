@@ -1,0 +1,50 @@
+// --- Rehype Pretty Code - 標題 ---
+.rehype-code-title {
+    @apply -mb-9 rounded-tl rounded-tr bg-slate-600 px-4 pt-1 pb-2 font-mono text-sm text-gray-200 dark:bg-slate-700 dark:text-gray-300; // 添加了暗色模式示例
+}
+
+// 調整標題後 pre 元素的圓角
+.rehype-code-title+[data-rehype-pretty-code-figure] pre {
+    @apply rounded-tl-none rounded-tr-none mt-0 !important;
+}
+
+code[data-line-numbers] {
+    // --- Rehype Pretty Code - 行號 ---
+    counter-reset: line;
+
+    > span[data-line] {
+        @apply block px-4 -mx-4 border-l-4 border-transparent;
+
+        &::before {
+            counter-increment: line;
+            content: counter(line);
+            @apply inline-block text-right text-gray-400;
+            margin-right: 1rem;
+            margin-left: -0.5rem;
+        }
+    }
+
+    // --- 行號高亮 ---
+    > span[data-line][data-highlighted-line] {
+        @apply -mx-4 bg-gray-700/50 border-l-4 border-blue-500;
+    }
+
+    // --- 差異高亮 ---
+    & [data-diff-remove] {
+        @apply -mx-4 bg-red-500/20;
+    }
+
+    & [data-diff-add] {
+        @apply -mx-4 bg-emerald-500/20;
+    }
+}
+
+// --- 行內代碼高亮 (GitHub 風格) ---
+:not(pre)>code {
+    @apply font-mono text-[0.875em] bg-gray-400/20 dark:bg-gray-600/30 px-[0.4em] py-[0.2em] rounded-md;
+
+    &::before,
+    &::after {
+        content: none !important;
+    }
+}

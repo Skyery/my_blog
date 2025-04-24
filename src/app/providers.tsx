@@ -1,22 +1,38 @@
 'use client';
 
-import { ThemeProvider as Theme } from "next-themes";
-import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
+import React from "react";
+import { ThemeProvider as NextThemeProvider } from "next-themes";
+import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 
-const ThemeProviders = ({ children } : Readonly<{children : React.ReactNode}>) => {
-    return <Theme attribute="class">{children}</Theme>
+import { KBarProvider } from 'kbar';
+import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { generateKBarActions } from '@/components/features/kbar/kbar-actions';
+import { CommandBarUI } from '@/components/features/kbar/CommandBarUI';
+
+export function ThemeProvider({ children }: Readonly<{ children: React.ReactNode }>): JSX.Element {
+    return <NextThemeProvider attribute="class">{children}</NextThemeProvider>;
 }
 
-const NprogressProvider = ({ children }: { children: React.ReactNode }) => {
+export function BprogressProvider({ children }: { children: React.ReactNode }): JSX.Element {
     return (
         <>
             {children}
-            <ProgressBar options={{ showSpinner: false }} />
+            <ProgressProvider options={{ showSpinner: false }} />
         </>
     );
-};
+}
 
-export {
-    ThemeProviders,
-    NprogressProvider,
-};
+export function KBarProviderWrapper({ children }: { children: React.ReactNode }): JSX.Element {
+    const router = useRouter();
+    const { setTheme } = useTheme();
+
+    const actions = generateKBarActions(router, setTheme);
+
+    return (
+        <KBarProvider actions={actions}>
+            <CommandBarUI />
+            {children}
+        </KBarProvider>
+    );
+}

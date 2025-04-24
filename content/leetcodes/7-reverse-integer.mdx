@@ -1,0 +1,51 @@
+---
+title: Reverse Integer
+description: Medium - 7. Reverse Integer
+date: 2021-03-18
+tags: []
+leetcodeID: 7
+difficulty: Medium
+draft: false
+---
+
+## LeetCode 練習 - 7. Reverse Integer
+> Javascript  
+> 日常刷題練習
+
+## 題目分析
+給一32位元正整數 **x**，傳回 **x** 的數字反轉。  
+如果反轉後導致其值超出32位元正整數範圍 **[-231, 231 - 1]**，則傳回 **0**。
+假設不允許儲存64位元正整數 (signed or unsigned)。
+
+## 最終結果
+
+```js:reverse-integer.js
+/**
+ * @param {number} x
+ * @return {number}
+ */
+var reverse = function(x) {
+    var arr = x.toString().split('');
+    if (arr.includes('-')) {
+        arr.shift();
+        arr.reverse().unshift('-');
+        arr = parseInt(arr.join(''))
+        if (arr < -2147483648) {
+            return 0;
+        } else {
+            return arr;
+        }
+
+    } else {
+        arr.reverse();
+        arr = parseInt(arr.join(''))
+        if (arr > 2147483648) {
+            return 0;
+        } else {
+            return arr;
+        }
+    }
+};
+```
+
+## 解題思路

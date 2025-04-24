@@ -1,0 +1,14 @@
+.postBody {
+    img {
+        @apply mx-auto;
+    }
+
+    blockquote {
+        @apply not-italic;
+
+        p:first-of-type::before,
+        p:last-of-type::after {
+            content: none;
+        }
+    }
+}
