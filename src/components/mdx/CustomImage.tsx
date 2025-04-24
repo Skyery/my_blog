@@ -11,14 +11,8 @@ export default function CustomImage({
     if (!src) return null;
     if (typeof src === 'string' && (!height || !width)) {
         return (
-            <Image
-                src={src}
-                alt={alt}
-                height={height}
-                width={width}
-                layout="intrinsic"
-                {...otherProps}
-            />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={src} height={height} width={width} alt={alt} {...otherProps} />
         );
     }
     return (
