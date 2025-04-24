@@ -1,0 +1,156 @@
+---
+title: TS - 復合型別 Composite Types
+description: 關於 Typescript 中的復合型別。
+date: 2024-11-05
+tags: ['typescript']
+draft: false
+---
+
+## TS 復合型別 (Composite Types)
+
+### 物件型別 Object Types
+
+物件型別用來描述一組屬性（鍵）和值（值）。
+
+```ts
+type Person = {
+    name: string;
+    age: number;
+}
+
+const person: Person = {
+    name: "Jason Lin",
+    age: 34
+}
+```
+
+### 陣列型別 Array Types
+
+陣列型別用來表示一組相同型別的元素。
+
+#### Array\<T\>
+
+用來表示含有元素的陣列。
+
+```ts
+const numbers: Array<number> = [1, 2, 3, 4];
+```
+
+#### T[]
+
+TypeScript 的簡寫方式。
+
+```ts
+const names: string[] = ["Alice", "Bob", "Charlie"];
+```
+
+### 元組型別 Tuple Types
+
+元組是一種特殊的數組，可以包含不同型別的元素，並且元素的數量是固定的。
+
+```ts
+const person: [string, number] = ["Jason", 34];
+const contact: [string, string, boolean] = ["Email", "ru042l41j4@gmail.com", true];
+```
+
+### 函式型別 Function Types
+
+函式型別描述了參數和返回值的型別。
+
+```ts
+const greet: (name: string) => string = (name) => {
+    return `Hello, ${name}`;
+};
+```
+
+### 型別擴展 Type Extension & Composition
+
+型別擴展用來創建更複雜的型別，可用於 型別化名 `Type Aliases` 與 `介面 Interfaces`。
+
+#### 型別化名 Type Aliases
+
+用來創建一個新型別，可以用於 `聯合型別 (Union)`、`交叉型別 (Intersection)` 等。
+
+- 基本型別化名
+
+    ```ts
+    type Person = {
+        name: string,
+        age: number
+    };
+
+    const jason: person = { name: "Jason", age: 34 };
+    ```
+
+- 聯合型別 Union
+
+    ```ts
+    type Status = "success" | "error" | "loading";
+
+    function showStatus(status: Status) {
+        console.log(`Current status: ${status}`);
+    }
+
+    showStatus("success")
+    showStatus("error")
+    // showStatus("pending")    // 錯誤，"pending" 不是 Status 型別的成員
+    ```
+
+- 交叉型別
+
+    ```ts
+    type Person {
+        name: string;
+        age: number
+    };
+
+    type Employee {
+        company: string;
+        jobTitle: string;
+    };
+
+    type Worker = Person & Employee;
+
+    const worker: Worker = {
+        name: "Jason",
+        age: 34,
+        company: "Tech Corp",
+        jobTitle: "Software Engineer"
+    };
+    ```
+
+#### 介面 Type Intefaces
+
+用來描述物件的結構，與類型別名非常相似，但介面可以被 `擴展（繼承） Extends`。
+
+- 基本介面
+
+    ```ts
+    interface Person {
+        name: string;
+        age: number;
+    }
+
+    const jason: Person = { name: "Jason", age: 34 };
+    ```
+
+- 繼承 Extends
+
+    ```ts
+    interface Person {
+        name: string;
+        age: number;
+    }
+
+    interface Employee extends Person {
+        company: string;
+        jobTitle: string;
+    }
+
+    const worker: Employee {
+        name: "Jason",
+        age: 34,
+        company: "Tech Corp",
+        jobTitle: "Software Engineer"
+    };
+    ```

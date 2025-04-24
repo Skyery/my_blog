@@ -1,0 +1,177 @@
+---
+title: TS - 特殊型別 Special Types
+description: 關於 Typescript 中的特殊型別。
+date: 2024-11-13
+tags: ['typescript']
+draft: false
+---
+
+## TS 特殊型別 (Special Types)
+
+### enum
+
+`enum` 是一種特殊型別，用來定義一組具名常數。  
+它不是像 `string` 或 `number` 等基本型別，而是允許將一組常數進行命名，讓程式碼更加清晰和可讀。
+
+```ts
+enum Direction {
+    Up = "UP",
+    Down = "DOWN",
+    Left = "LEFT",
+    Right = "RIGHT"
+}
+
+const move: Direction = Direction.Up;
+console.log(move)   // "UP"
+```
+
+### any
+
+any 類型表示可以是任何型別，放寬了 TypeScript 的類型檢查。  
+它是最不安全的型別，因為它不會執行類型檢查，這會讓開發者可以在編譯時跳過檢查。  
+
+雖然 `any` 很方便，但會失去 `TypeScript` 的靜態類型檢查的優勢，應盡可能的避免使用。
+
+以下是一些常見的使用情況：
+
+- 外部數據源或第三方庫的類型未知
+
+    ```ts
+    let response: any = fetch("https://api.example.com");
+    ```
+
+- 類型推斷無法確定的情況
+
+    ```ts
+    function processData(data: any) {
+        // 這裡的 data 可以是任何類型
+    }
+    ```
+
+- 逐步遷移舊代碼
+  - 為了避免在過渡期間過多的類型錯誤，可以使用 `any`，以便專注於重構邏輯，而不必立即解決所有類型問題。
+- 函數的返回值類型不確定
+
+    ```ts
+    function getData(): any {
+        return Math.random() > 0.5 ? 42 : "Hello";
+    }
+    ```
+
+- 動態創建的對象或數據結構
+
+    ```ts
+    let jsonData: any = JSON.parse('{ "name": "Jason", "age": 34 }');
+    ```
+
+### unknown
+
+`unknown` 類型與 `any` 類型相似，但比 `any` 更安全，因為你不能對 `unknown` 類型的值進行任何操作，直到你確定它的具體型別。
+
+```ts
+let value: unknown = 42;
+value = "Hello";
+
+// 這邊會報錯，
+// let result = value.toUpperCase();
+
+// 需要先確定具體型別後才能正常執行
+if (typeof value === "string") {
+    console.log(value.toUpperCase());
+}
+```
+
+### void
+
+`void` 類型通常用來表示函數的返回值類型，表示函數不返回任何東西。它是與 `undefined` 不同的型別。
+
+```ts
+function logMessage(message: string): void {
+    console.log(message);
+}
+```
+
+`void` 型別的變數是 `undefined`，但不建議直接給它賦值。  
+違反了 `void` 的設計初衷，也可能會造成不必要的困惑。
+
+```ts
+let value: void;
+
+// 合法
+value = undefined
+// 不合法，在 strictNullChecks 模式下，不能賦值為 null
+// value = null;
+```
+
+### nerver
+
+`never` 類型用來表示永遠不會有任何值的類型。  
+通常用於無法正常結束的函數，如會拋出錯誤的函數或無限循環的函數。
+
+```ts
+function throwError(message: string): never {
+    throw new Error(message);
+}
+
+function inifiniteLoop(): never {
+    while (true) {}
+}
+```
+
+`never` 也可以用來確保 `TypeScript` 的類型判斷是完整。  
+假設日後 `Status` 被擴展，而又忘記 `switch` 的處理，`TypeScript` 會報錯，可以確保代碼完整性。
+
+```ts
+enum Status {
+    Success,
+    Failure,
+}
+
+function processStatus(status: Status) {
+    switch(status) {
+        case Status.Success:
+            console.log("Success！");
+            break;
+        case Status.Failure:
+            console.log("Failure！");
+            break;
+        default: 
+            // TypeScript 會在這裡報錯（如果 status 有新值）
+            const unreachable: never = status;
+            throw new Error(`Unexpected status: ${status}`);
+    }
+}
+```
+
+### null & undefined
+
+如果開啟 strictNullChecks，則必須明確處理 null 和 undefined，否則會報錯。
+
+```ts
+console.log(null == undefined);     // true
+console.log(null === undefined);    // false
+```
+
+#### null
+
+`null` 類型表示一個空值，它通常用來表示變數目前沒有任何值。
+
+```ts
+let value: null = null;
+
+console.log(null + 1);      // 1，因為 null 會轉換為 0
+```
+
+#### undefined
+
+`undefined` 類型表示一個未定義的變數。  
+當變數被聲明但尚未賦值時，它的預設值就是 `undefined`。  
+
+```ts
+let value: undefined = undefined;
+
+// 默認為 undefined
+let testVar;
+
+console.log(undefined + 1)  // NaN，因為 undefined 不能轉換為數字
+```

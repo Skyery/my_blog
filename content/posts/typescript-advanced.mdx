@@ -1,0 +1,140 @@
+---
+title: TS - 高階型別 Advanced Types
+description: 關於 Typescript 中的高階型別。
+date: 2024-11-25
+tags: ['typescript']
+draft: false
+---
+
+## TS 高階型別 (Advanced Types)
+
+高階型別提供了更靈活的類型操作，讓我們能夠更好地處理複雜的型別關係。
+
+### 泛型 Generics
+
+泛型允許我們在定義函數、介面、類別時，使用變數來表示某個型別，而不是直接指定具體的型別，從而提升代碼的通用性和可復用性。
+
+#### 泛型函數
+
+```ts
+function identity<T>(value: T): T {
+    return value;
+}
+
+console.log(identity<number>(33));          // 33
+console.log(identity<string>("Hellog"));    // Hello
+```
+
+#### 泛型介面
+
+```ts
+interface Box<T> {
+    content: T;
+}
+
+const box: Box<string> = { content: "Books" };
+```
+
+#### 泛型類別
+
+```ts
+class DataStorage<T> {
+    private data: T[] = [];
+
+    add(item: T) {
+        this.data.push(item);
+    }
+
+    getAll(): T[] {
+        return this.data;
+    }
+}
+
+const storage = new DataStorage<number>();
+storage.add(10);
+storage.add(20);
+console.log(storage.getAll());  // [10, 20]
+```
+
+### 條件型別 Conditional Types
+
+條件型別允許我們根據一個型別是否符合特定條件來決定它的最終型別。
+
+```ts
+type IsString<T> = T extends string ? "yes" : "no";
+
+type A = IsString<string>;  // "yes"
+type B = IsString<number>;  // "no"
+```
+
+### 映射型別 Mapped Types
+
+映射型別允許我們基於某個已有的型別創建一個新的型別，通常與 `keyof` 關鍵字搭配使用。
+
+```ts
+type Person = {
+    name: string;
+    age: number;
+};
+
+type ReadonlyPerson = {
+    readonly [K in keyof Person]: Person[K];
+};
+
+const person: ReadonlyPerson = { name: "Jason", age: 34 };
+// 會報錯誤，Error: Cannot assign to 'age' because it is a read-only property.
+// person.age = 35;
+```
+
+### 索引型別 Indexed Types
+
+索引型別允許我們從物件型別中取得某個特定屬性的型別。
+
+```ts
+type Person = {
+    name: string;
+    age: number;
+};
+
+type AgeType = Person["age"];    // number
+```
+
+### 交叉型別 Intersection Types
+
+交叉型別允許我們將多個型別合併成一個新型別。
+
+```ts
+type A = { name: stirng };
+type B = { age: number };
+
+type Person = A & B;
+const person: Person = { name: "Jason", age: 34 };
+```
+
+### 映射修飾符 Type Modifiers
+
+`TypeScript` 提供了一些修飾符，可以用來修改型別的行為，例如 `Partial、Required、Readonly` 等。
+
+```ts
+type Person = {
+    name: string;
+    age: number;
+};
+
+type PartialPerson = Partial<Person>;   // 所有屬性變成可選
+type RequiredPerson = Required<Person>; // 所有屬性變成必填
+type ReadonlyPerson = Readonly<Person>; // 所有屬性變成唯獨
+```
+
+### 鍵入型別 Keyof Type Operator
+
+`keyof` 運算子可以用來獲取一個物件型別的所有鍵，並將它們作為聯合型別返回。
+
+```ts
+type Person = {
+    name: string;
+    age: number;
+};
+
+type PersonKeys = keyof Person; // "name" | "age"
+```

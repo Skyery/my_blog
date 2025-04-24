@@ -1,0 +1,41 @@
+---
+title: Join Two Arrays By ID
+description: Medium - [JS 30] 2722. Join Two Arrays By ID
+date: 2024-01-02
+tags: []
+leetcodeID: 2722
+difficulty: Medium
+draft: false
+---
+
+## LeetCode 練習 - 2722. Join Two Arrays By ID
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+
+給兩個陣列 **arr1** 和 **arr2**，傳回一個新陣列 **joinedArray**。每個輸入陣列中的所有對象都包含一個具有整數值的 **id** 字段。
+
+**joinedArray** 是根據 **id** 鍵合併 **arr1** 和 **arr2** 形成的陣列。**joinedArray** 的長度應等於 **id** 的唯一值的長度。傳回的陣列應根據 **id** 鍵按升序排序。
+
+如果某個 **id** 存在於一個陣列中但不存在於另一個陣列中，則結果陣列中應包括具有該 **id** 的單個對象，且不做修改。
+
+如果兩個對象共享同一個 **id**，則它們的屬性應合併為一個對象：
+
+* 如果某個鍵只存在於一個對象中，則該鍵值對應包含在結果對象中。
+* 如果某個鍵同時包含在兩個對象中，則來自 **arr2** 的對象中的值應覆蓋來自 **arr1** 的對象中的值。
+
+## 最終結果
+
+```js:join-two-arrays-by-id.js
+/**
+ * @param {Array} arr1
+ * @param {Array} arr2
+ * @return {Array}
+ */
+var join = function(arr1, arr2) {
+    return Object.values(arr1.concat(arr2).reduce((acc, obj) => (acc[obj.id] = !acc[obj.id] ? obj : { ...acc[obj.id], ...obj }, acc), {}));
+};
+```
+
+## 解題思路

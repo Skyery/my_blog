@@ -1,0 +1,43 @@
+---
+title: Counter II
+description: Easy - [JS 30] 2665. Counter II
+date: 2023-11-01
+tags: []
+leetcodeID: 2665
+difficulty: Easy
+draft: false
+---
+
+## LeetCode 練習 - 2665. Counter II
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+寫一個函式 **createCounter**。接受正整數 **init**。  
+傳回一個具有三個函式的物件。  
+
+三個函式分別為：
+
+* **increment**：傳回當前值 **+ 1**。
+* **reset**：傳回當前值 **- 1**。
+* **decrement**：將當前值設為 **init** 後傳回。
+
+## 最終結果
+
+```js:counter-ii.js
+/**
+ * @param {integer} init
+ * @return { increment: Function, decrement: Function, reset: Function }
+ */
+var createCounter = function(init) {
+    let base = init;
+
+    const increment = () => ++base;
+    const reset = () => base = init;
+    const decrement = () => --base;
+
+    return { increment, reset, decrement };
+};
+```
+
+## 解題思路

@@ -1,0 +1,54 @@
+---
+title: Promise Time Limit
+description: Medium - [JS 30] 2637. Promise Time Limit
+date: 2023-12-27
+tags: []
+leetcodeID: 2637
+difficulty: Medium
+draft: false
+---
+
+## LeetCode 練習 - 2637. Promise Time Limit
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一異步函式 **fn** 和一個毫秒時間 **t**，傳回輸入函式的時間限制版本。  
+
+這個限時函式遵循以下規則：  
+* 如果 **fn** 在 **t** 毫秒內完成，則限時函式應 **resolve** 結果。
+* 如果 **fn** 執行超時，則限時函式應 **reject** 並傳回字串 **"Time Limit Exceeded"**。
+
+
+## 最終結果
+
+```js:promise-time-limit.js
+/**
+ * @param {Function} fn
+ * @param {number} t
+ * @return {Function}
+ */
+var timeLimit = function(fn, t) {
+    
+    return async function(...args) {
+        return new Promise((resolve, reject) => {
+            const timer = setTimeout(() => {
+                clearTimeout(timer);
+                reject("Time Limit Exceeded");
+            }, t);
+
+            fn(...args)
+                .then((result) => {
+                    clearTimeout(timer);
+                    resolve(result);
+                })
+                .catch((error) => {
+                    clearTimeout(timer);
+                    reject(error);
+                })
+        });
+    }
+};
+```
+
+## 解題思路

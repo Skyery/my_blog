@@ -1,0 +1,79 @@
+---
+title: Employee Bonus
+description: Easy - [SQL 50] 577. Employee Bonus
+date: 2023-10-31
+tags: []
+leetcodeID: 577
+difficulty: Easy
+draft: false
+---
+
+## LeetCode 練習 - 577. Employee Bonus
+> MySQL  
+> SQL 50 天系列
+
+## 題目分析
+
+Table: **Activity**
+> | Column Name | Type    |
+> | ----------- | ------- |
+> | empId       | int     |
+> | name        | varchar |
+> | supervisor  | int     |
+> | salary      | int     |
+>
+> **empId** 是這個表中具有唯一值的欄位。  
+> 這個表的每一行表示員工的姓名和 **ID**，以及他們的薪水和他們的經理的 **ID**。
+
+Table: **Bonus**
+> | Column Name | Type |
+> | ----------- | ---- |
+> | empId       | int  |
+> | bonus       | int  |
+>
+> **empId** 是這個表中具有唯一值的欄位。  
+> **empId** 是一個外鍵（參考欄位），引用了 **Employee** 表中的 **empId**。  
+> 這個表的每一行包含一個員工的 **ID** 及其相應的獎金。
+
+編寫一個解決方案來報告獎金少於 **1000** 的每位員工的姓名和獎金金額。
+
+以任何順序返回結果表。
+
+結果格式如下例所示。
+
+Example 1:  
+> Input:  
+> **Employee table**
+> | empId | name   | supervisor | salary |
+> | ----- | ------ | ---------- |------- |
+> | 3     | Brad   | null       | 4000   |
+> | 1     | John   | 3          | 1000   |
+> | 2     | Dan    | 3          | 2000   |
+> | 4     | Thomas | 3          | 4000   |
+>
+> **Bonus table**
+> | empId | bonus |
+> | ----- | ----- |
+> | 2     | 500   |
+> | 4     | 2000  |
+>
+> Output:
+> | name | bonus |
+> | ---- | ----- |
+> | Brad | null  |
+> | John | null  |
+> | Dan  | 500   |
+
+## 最終結果
+
+```js:employee-bonus.sql
+# Write your MySQL query statement below
+SELECT
+    name
+    , bonus
+FROM Employee
+LEFT JOIN Bonus ON Employee.empId = Bonus.empId
+WHERE bonus < 1000 OR bonus IS NULL;
+```
+
+## 解題思路
