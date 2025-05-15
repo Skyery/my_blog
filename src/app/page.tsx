@@ -1,18 +1,13 @@
+import { allPosts } from 'contentlayer/generated';
 import { compareDesc } from "date-fns";
-import { allPosts, type Post } from "contentlayer/generated";
-import PostList, { PostForPostList } from '@/app/components/PostList';
+import PostList from '@/components/features/post/PostList';
 
-type PostForIndexPage = PostForPostList;
+const isProduction = process.env.NODE_ENV === 'production';
 
-export default function Home() {
-    const allPostsNewToOld = allPosts?.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)));
-    const posts = allPostsNewToOld.map((post) => ({
-        slug: post.slug,
-        date: post.date,
-        title: post.title,
-        description: post.description,
-        path: post.path,
-    })) as PostForIndexPage[];
+export default function Home(): JSX.Element {
+    const posts = allPosts
+        .filter((post) => !isProduction || !post.draft)
+        .sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)));
 
     return (
         <>

@@ -1,0 +1,32 @@
+---
+title: Counter
+description: Easy - [JS 30] 2620. Counter
+date: 2023-11-01
+tags: []
+leetcodeID: 2620
+difficulty: Easy
+draft: false
+---
+
+## LeetCode 練習 - 2620. Counter
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一整數 **n**，傳回一個計數器函式。  
+計數器最初傳回 **n**，之後每次呼叫時都傳回比先前的值多 **1**  
+(n、n + 1、n + 2 ..)。
+
+## 最終結果
+
+```js:counter.js
+/**
+ * @param {number} n
+ * @return {Function} counter
+ */
+var createCounter = function(n) {
+    return () => n++;
+};
+```
+
+## 解題思路

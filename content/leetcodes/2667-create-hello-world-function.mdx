@@ -1,0 +1,32 @@
+---
+title: Create Hello World Function
+description: Easy - [JS 30] 2667. Create Hello World Function
+date: 2023-11-01
+tags: []
+leetcodeID: 2667
+difficulty: Easy
+draft: false
+---
+
+## LeetCode 練習 - 2667. Create Hello World Function
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+寫一函式 **createHelloWorld**。  
+回傳新函式且始終回傳 **"Hello World"**。
+
+## 最終結果
+
+```js:create-hello-world-function.js
+/**
+ * @return {Function}
+ */
+var createHelloWorld = function() {
+    return function(...args) {
+        return "Hello World"
+    }
+};
+```
+
+## 解題思路

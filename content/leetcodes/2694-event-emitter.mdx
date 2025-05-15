@@ -1,0 +1,76 @@
+---
+title: Event Emitter
+description: Medium - [JS 30] 2694. Event Emitter
+date: 2024-01-02
+tags: []
+leetcodeID: 2694
+difficulty: Medium
+draft: false
+---
+
+## LeetCode 練習 - 2694. Event Emitter
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+
+設計一個 **EventEmitter Class**。這個接口類似（但有一些不同）於 **Node.js** 中的 **EventEmitter** 或 **DOM** 的 **Event Target** 接口。**EventEmitter** 應該允許訂閱事件並觸發它們。
+
+你的 **EventEmitter** 類應該具有以下兩個方法：
+
+1. **subscribe** - 此方法接受兩個參數：事件名稱（**string**）和 **callback function**。當事件被觸發時，這個 **callback function** 會被調用。
+    * 一個事件應該能夠有多個對應的 **callback function**（**listener**）。當觸發一個具有多個 **callback function** 的事件時，每個 **callback function** 應按訂閱順序依次被調用。應傳回一個結果陣列。你可以假設傳給 **subscribe** 的 **callback function** 沒有參考相同的函式。  
+    * **subscribe** 方法應傳回一個 **unsubscribe** 方法，該方法允許用戶取消訂閱。當該方法被調用時，應將 **callback function** 從訂閱列表中移除，並傳回 **undefined**。  
+
+2. **emit** - 此方法接受兩個參數：事件名稱（**string**）和可選的參數陣列，這些參數將被傳遞給 **callback function**。如果沒有 **callback function** 訂閱給定的事件，則傳回一個空陣列。否則，傳回按訂閱順序依次調用所有 **callback function** 的結果陣列。
+
+## 最終結果
+
+```js:event-emitter.js
+class EventEmitter {
+    constructor() {
+        this.events = new Map();
+    }
+    
+    /**
+     * @param {string} eventName
+     * @param {Function} callback
+     * @return {Object}
+     */
+    subscribe(eventName, callback) {
+        const listener = this.events.get(eventName) || this.events.set(eventName, []).get(eventName);
+        listener.push(callback);
+
+        return {
+            unsubscribe: () => listener.splice(listener.indexOf(callback), 1)
+        };
+    }
+    
+    /**
+     * @param {string} eventName
+     * @param {Array} args
+     * @return {Array}
+     */
+    emit(eventName, args = []) {
+        if(!this.events.has(eventName)) return [];
+
+        const listener = this.events.get(eventName);
+
+        return listener.map(lt => lt(...args));
+    }
+}
+
+/**
+ * const emitter = new EventEmitter();
+ *
+ * // Subscribe to the onClick event with onClickCallback
+ * function onClickCallback() { return 99 }
+ * const sub = emitter.subscribe('onClick', onClickCallback);
+ *
+ * emitter.emit('onClick'); // [99]
+ * sub.unsubscribe(); // undefined
+ * emitter.emit('onClick'); // []
+ */
+```
+
+## 解題思路

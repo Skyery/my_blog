@@ -1,43 +1,60 @@
-// {
-//   "extends": "next/core-web-vitals"
-// }
-
 module.exports = {
-    extends: [
-        'next',
-        'prettier',
-        'eason',
-        'next/core-web-vitals',
-        'plugin:prettier/recommended', // Make this the last element so prettier config overrides other formatting rules
-    ],
-    rules: {
-        'jsx-a11y/anchor-is-valid': [
-            'error',
-            {
-                components: ['Link'],
-                specialLink: ['hrefLeft', 'hrefRight'],
-                aspects: ['invalidHref', 'preferButton'],
-            },
-        ],
+    root: true,
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+        ecmaVersion: 2021,
+        sourceType: 'module',
+        ecmaFeatures: {
+            jsx: true,
+        },
     },
     settings: {
-        // Support absolute imports
-        // https://www.npmjs.com/package/eslint-import-resolver-alias
-        'import/resolver': {
-            alias: {
-                map: [['@', './src']],
-                extensions: ['.js', '.jsx', '.ts', '.tsx'],
-            },
+        react: {
+            version: 'detect',
         },
-        'import/ignore': ['contentLayerAdapter.js'],
     },
-    overrides: [
-        {
-            files: '**/*.{ts,tsx}',
-            extends: [
-                'eason/typescript',
-                'plugin:prettier/recommended', // Make this the last element so prettier config overrides other formatting rules
-            ],
-        },
+    env: {
+        browser: true,
+        node: true,
+        es2021: true,
+    },
+    plugins: [
+        '@typescript-eslint',
+        'react',
+        'react-hooks',
+        'jsx-a11y',
+        '@next/next',
+        'prettier',
+    ],
+    extends: [
+        'next/core-web-vitals',
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:react/recommended',
+        'plugin:react-hooks/recommended',
+        'plugin:jsx-a11y/recommended',
+        'plugin:@next/next/recommended',
+        'prettier',
+    ],
+    rules: {
+        'react/react-in-jsx-scope': 'off',
+        'react/prop-types': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'error',
+        '@typescript-eslint/no-unused-vars': [
+            'error',
+            { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+        ],
+        'prettier/prettier': 'off',
+    },
+    ignorePatterns: [
+        'node_modules/',
+        '.next/',
+        'out/',
+        'build/',
+        'dist/',
+        '**/*.config.js',
+        '**/*.config.ts',
+        '.eslintrc.js',
+        'contentlayer.config.ts',
     ],
 };

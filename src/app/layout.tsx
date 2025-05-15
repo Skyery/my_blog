@@ -1,37 +1,31 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import '@/app/styles/prism-dracula.css';
-import '@/app/styles/prism-plus.css';
-import '@/app/styles/nprogress-custom.scss';
-import { ThemeProviders, NprogressProvider } from "./providers";
-import LayoutWrapper from "./components/LayoutWrapper";
-import CommandPalette from '@/app/components/CommandPalette';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import '@/app/globals.scss';
+import { ThemeProvider, BprogressProvider, KBarProviderWrapper } from '@/app/providers';
+import LayoutWrapper from '@/components/layout/LayoutWrapper';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: "Jason's Blog",
-    description: "這裡是紀錄我自學及工作上點點滴滴的筆記本。",
+    title: "Jason's Note",
+    description: '這裡是紀錄我自學及工作上點點滴滴的筆記本。',
 };
 
 export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
-}>) {
+}>): JSX.Element {
     return (
-        <html lang="en" className="light" style={{ colorScheme: 'light' }}>
+        <html lang="zh-TW" className="light" style={{ colorScheme: 'light' }}>
             <body className={inter.className}>
-                <ThemeProviders>
-                    <CommandPalette>
-                        <NprogressProvider>
-                            <LayoutWrapper>
-                                {children}
-                            </LayoutWrapper>
-                        </NprogressProvider>
-                    </CommandPalette>
-                </ThemeProviders>
+                <ThemeProvider>
+                    <KBarProviderWrapper>
+                        <BprogressProvider>
+                            <LayoutWrapper>{children}</LayoutWrapper>
+                        </BprogressProvider>
+                    </KBarProviderWrapper>
+                </ThemeProvider>
             </body>
         </html>
     );

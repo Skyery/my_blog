@@ -1,0 +1,44 @@
+---
+title: Array Reduce Transformation
+description: Easy - [JS 30] 2626. Array Reduce Transformation
+date: 2023-11-02
+tags: []
+leetcodeID: 2626
+difficulty: Easy
+draft: false
+---
+
+## LeetCode 練習 - 2626. Array Reduce Transformation
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一整數陣列 **nums**、一個減少器 **fn** 和一個初始值 **init**，傳回按順序對陣列中每個元素執行 **fn** 函式，將前一個元素的計算結果作為參數傳遞的最終結果。  
+
+結果會是通過以下操作實現：  
+**val = fn(init, nums[0])，val = fn(val, nums[1])，val = fn(val, nums[2])**，
+直到處理完陣列中所有元素後，傳回 **val**。  
+
+如果陣列的長度為 **0**，則函數應該返回 **init**。  
+
+不能使用內建的 **Array.reduce** 方法。
+
+## 最終結果
+
+```js:array-redudce-transformation.js
+/**
+ * @param {number[]} nums
+ * @param {Function} fn
+ * @param {number} init
+ * @return {number}
+ */
+var reduce = function(nums, fn, init) {
+    for(const num of nums){
+        init = fn(init, num);
+    }
+
+    return init;
+};
+```
+
+## 解題思路

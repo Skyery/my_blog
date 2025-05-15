@@ -1,0 +1,410 @@
+---
+title: Python - CSV 轉 Chart 圖表工具
+description: 工作上分析 rawData 常用的轉換工具。
+date: 2025/02/19
+tags: ['python', '工具', 'CSVToChart', 'tool']
+draft: false
+---
+
+## 簡述
+
+工作上時常需要分析IOT設備所收集的 `rawData`，但通常資料量都相對龐大，很難直接一眼從CSV直接看出問題。  
+早些時期需要分析的需求算少，都是手動操作 `Excel` 進行圖表的繪製。  
+隨著分析需求需求上升，就有了把這個任務交給程式來處理的想法。
+
+## 程式碼
+
+### CSVToChart
+
+```py:CVSToChart.py
+import sys
+from pathlib import Path
+import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
+from openpyxl.utils import get_column_letter
+from openpyxl.chart import LineChart, Reference
+from openpyxl.chart.axis import NumericAxis, TextAxis
+from openpyxl.chart.legend import Legend
+from openpyxl.drawing.colors import ColorChoice
+from datetime import datetime
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QFileDialog, QComboBox, QListWidget, QListWidgetItem, QMessageBox, QTextEdit, QCheckBox
+
+class CSVToChart(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        self.excel_file = None
+        self.sheet_names = None
+        self.excel_data = None
+
+    def initUI(self):
+        layout = QVBoxLayout()
+
+        # Content Dashboard (狀態顯示區域)
+        self.dashboard_text = QTextEdit()
+        self.dashboard_text.setReadOnly(True)  # 設置為只讀模式
+        self.dashboard_text.setPlainText("")  # 初始化訊息
+        layout.addWidget(self.dashboard_text)
+
+        # 選擇 Excel 檔案
+        self.label = QLabel("請選擇 Excel 檔案")
+        self.btn_select_file = QPushButton("選擇 Excel")
+        self.btn_select_file.clicked.connect(self.select_file)
+        layout.addWidget(self.label)
+        layout.addWidget(self.btn_select_file)
+
+        # 選擇 設備群組 (loopname)
+        group_layout = QGridLayout()
+
+        self.group_label = QLabel("選擇 設備群組 (e.g. UMC-loopname)")
+        self.is_group_label = QLabel("是否包含群組欄位？")
+        self.group_combobox = QComboBox()
+        self.group_combobox.setDisabled(True)
+        self.is_group_checkbox = QCheckBox()
+        self.is_group_checkbox.setChecked(True)
+        self.is_group_checkbox.setDisabled(True)
+        self.is_group_checkbox.stateChanged.connect(self.on_group_checkbox_changed)
+
+        group_layout.addWidget(self.is_group_label, 0, 0)   # 第一行第一列
+        group_layout.addWidget(self.group_label, 0, 1)
+        group_layout.addWidget(self.is_group_checkbox, 1, 0)
+        group_layout.addWidget(self.group_combobox, 1, 1)
+
+        group_layout.setColumnStretch(0, 1)  # 寬度比例 1 : 2
+        group_layout.setColumnStretch(1, 2)
+
+        layout.addLayout(group_layout)
+
+        # 選擇 X 軸
+        x_layout = QGridLayout()
+
+        self.x_label = QLabel("選擇 X 軸欄位 - 橫向 (e.g. 時間)")
+        self.x_time_label = QLabel("X 軸是否為時間？")
+        self.x_combobox = QComboBox()
+        self.x_combobox.setDisabled(True)
+        self.x_time_checkbox = QCheckBox()
+        self.x_time_checkbox.setChecked(True)
+        self.x_time_checkbox.setDisabled(True)
+
+        x_layout.addWidget(self.x_time_label, 0, 0)   # 第一行第一列
+        x_layout.addWidget(self.x_label, 0, 1)  # 第一行第二列
+        x_layout.addWidget(self.x_time_checkbox, 1, 0)  # 第二行第一列
+        x_layout.addWidget(self.x_combobox, 1, 1)  # 第二行第二列
+
+        x_layout.setColumnStretch(0, 1)  # 寬度比例 1 : 2
+        x_layout.setColumnStretch(1, 2)  
+
+        layout.addLayout(x_layout)  # 加入主 Layout
+
+        # 選擇 Y 軸
+        self.y_label = QLabel("選擇 Y 軸欄位 - 縱向 (e.g. 數據)")
+        self.y_list = QListWidget()
+        self.y_list.setSelectionMode(QListWidget.MultiSelection)
+        self.y_list.setDisabled(True)
+        layout.addWidget(self.y_label)
+        layout.addWidget(self.y_list)
+
+        # 選擇基線
+        self.extra_y_label = QLabel("選擇 基線 (可選)")
+        self.extra_y_list = QListWidget()
+        self.extra_y_list.setSelectionMode(QListWidget.MultiSelection)
+        self.extra_y_list.setDisabled(True)
+        layout.addWidget(self.extra_y_label)
+        layout.addWidget(self.extra_y_list)
+
+        # 輸出檔案名稱
+        self.output_label = QLabel("輸出檔案名稱 (不包含副檔名)")
+        self.output_filename = QLineEdit("output")
+        layout.addWidget(self.output_label)
+        layout.addWidget(self.output_filename)
+
+        # 轉換按鈕
+        self.btn_convert = QPushButton("開始轉換")
+        self.btn_convert.clicked.connect(self.convert_to_chart)
+        layout.addWidget(self.btn_convert)
+
+        self.setLayout(layout)
+        self.setWindowTitle("CSV To Chart 轉換工具")
+        self.resize(400, 300)
+
+    def on_group_checkbox_changed(self):
+        if self.is_group_checkbox.isChecked():
+            self.group_combobox.setEnabled(True)
+        else:
+            self.group_combobox.setEnabled(False)
+
+    def async_print(self, text):
+        self.dashboard_text.append(text)
+        QCoreApplication.processEvents()
+
+    def select_file(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "選擇 Excel 檔案", "", "Excel Files (*.xlsx *.xls *.csv)")
+        if file_path:
+            self.label.setText(f"選擇的檔案: {file_path}")
+            self.load_excel(file_path)
+    
+    def load_excel(self, file_path):
+        self.async_print(f"正在載入： {Path(file_path).name}")
+
+        self.sheet_names = pd.ExcelFile(file_path).sheet_names
+        self.excel_file = pd.ExcelFile(file_path)
+        self.excel_data = pd.read_excel(file_path)
+        
+        self.group_combobox.clear()
+        self.x_combobox.clear()
+        self.y_list.clear()
+        self.extra_y_list.clear()
+
+        for column in self.excel_data.columns:
+            item = QListWidgetItem(column)
+            self.group_combobox.addItem(column)
+            self.x_combobox.addItem(column)
+            self.y_list.addItem(column)
+            self.extra_y_list.addItem(item)
+
+        self.is_group_checkbox.setEnabled(True)
+        self.x_time_checkbox.setEnabled(True)
+        self.group_combobox.setEnabled(True)
+        self.x_combobox.setEnabled(True)
+        self.y_list.setEnabled(True)
+        self.extra_y_list.setEnabled(True)
+
+        self.async_print(f"載入完成！")
+
+    def status_check(self):
+        if self.excel_data is None:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle("警告")
+            msg_box.setText("請先選擇 Excel 檔案！")
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec_()
+            return False
+        elif not self.x_combobox.currentText() or not self.y_list.selectedItems():
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle("警告")
+            msg_box.setText("請選擇 X 軸和 Y 軸欄位！")
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec_()
+            return False
+        else:
+            return True
+
+    def process_excel(self, writer):
+        is_group = self.is_group_checkbox.isChecked()
+        group_column = self.group_combobox.currentText() if is_group else None
+        x_column = self.x_combobox.currentText()
+        y_columns = [item.text() for item in self.y_list.selectedItems()]
+        extra_y_columns = [item.text() for item in self.extra_y_list.selectedItems()]
+        
+        # 如果啟用群組，則將 group_column 包含在 required_columns 中
+        required_columns_base = [x_column] + y_columns + extra_y_columns
+        required_columns = required_columns_base + ([group_column] if is_group and group_column else [])
+
+        for sheet in self.sheet_names:
+            self.async_print(f"正在處理工作表：{sheet}")
+            
+            try:
+                df = pd.read_excel(self.excel_file, sheet_name=sheet)
+            except Exception as e:
+                self.async_print(f"[錯誤] 讀取工作表 {sheet} 時發生錯誤: {e}")
+                continue
+
+            # --- 檢查必要欄位 ---
+            missing_cols = [col for col in required_columns if col not in df.columns]
+            if missing_cols:
+                msg_text = f"在工作表 {sheet} 中，缺少必要欄位，已跳過。\n缺少欄位： {', '.join(missing_cols)}"
+                QMessageBox.warning(self, "警告", msg_text)
+                self.async_print(f"[警告] {msg_text}")
+                continue
+
+            # --- 寫入原始數據 ---
+            try:
+                df.to_excel(writer, sheet_name=f"{sheet}_Origin", index=False)
+                workbook = writer.book
+                worksheet_origin = workbook[f"{sheet}_Origin"]
+            except Exception as e:
+                 self.async_print(f"[錯誤] 寫入原始工作表 {sheet}_Origin 時發生錯誤: {e}")
+                 continue
+
+            # --- 時間處理 ---
+            if self.x_time_checkbox.isChecked():
+                try:
+                    # **重要：轉換時間欄位，並處理可能的錯誤**
+                    df[x_column] = pd.to_datetime(df[x_column], errors='coerce')
+                    # 移除時間轉換失敗的行 (NaT - Not a Time)
+                    original_rows = len(df)
+                    df = df.dropna(subset=[x_column])
+                    if len(df) < original_rows:
+                         self.async_print(f"[警告] 在 {sheet} 的 {x_column} 欄位中發現並移除了無效的時間格式。")
+
+                    if not df.empty:
+                        df_time = df[x_column]
+                        start_date = df_time.min().strftime("%Y/%m/%d %H:%M:%S")
+                        end_date = df_time.max().strftime("%Y/%m/%d %H:%M:%S")
+
+                        # 插入時間起訖日期到 Origin sheet
+                        col_count = worksheet_origin.max_column
+                        worksheet_origin.cell(row=1, column=col_count + 2, value="start_datetime")
+                        worksheet_origin.cell(row=1, column=col_count + 3, value="end_datetime")
+                        worksheet_origin.cell(row=2, column=col_count + 2, value=start_date)
+                        worksheet_origin.cell(row=2, column=col_count + 3, value=end_date)
+                    else:
+                         self.async_print(f"[警告] 在 {sheet} 的 {x_column} 欄位處理後沒有有效的時間數據。")
+
+                except Exception as e:
+                    self.async_print(f"[錯誤] 在 {sheet} 處理時間欄位 {x_column} 時發生錯誤: {e}")
+                    continue
+
+            # --- 數據重塑 (Pivot) ---
+            for y_column in y_columns:
+                self.async_print(f"  -> 正在重塑欄位：{y_column}")
+                
+                # --- 提取基線數據 (如果有的話) ---
+                # 假設基線對於同一個時間點是固定的，與 loop 無關
+                # 需要確保時間和基線欄位對應，並去除重複時間點
+                baseline_df = pd.DataFrame()
+                if extra_y_columns:
+                    baseline_cols_present = [col for col in extra_y_columns if col in df.columns]
+                    if baseline_cols_present:
+                        try:
+                            # 選取時間和存在的基線欄位，去除基線值全為 NaN 的行，並按時間去除重複項
+                            baseline_df = df[[x_column] + baseline_cols_present].copy()
+                            baseline_df = baseline_df.dropna(subset=baseline_cols_present, how='all')
+                            baseline_df = baseline_df.drop_duplicates(subset=[x_column], keep='first')
+                            baseline_df = baseline_df.set_index(x_column) # 設定時間為索引以方便合併
+                        except Exception as e:
+                             self.async_print(f"[警告] 在 {sheet} 提取基線數據 ({', '.join(baseline_cols_present)}) 時發生錯誤: {e}")
+                             baseline_df = pd.DataFrame()
+
+                # --- 執行 Pivot ---
+                try:
+                    if is_group and group_column:
+                        pivot_df = df.pivot_table(
+                            index=x_column,       # 行索引 = 時間
+                            columns=group_column, # 列索引 = 設備群組
+                            values=y_column       # 表格中的值 = Y 軸數據
+                            # aggfunc='mean' # 如果同一個 loop 同一個時間點有多筆數據，決定如何聚合，例如取平均。如果確定不會重複，可省略。
+                                             # 如果省略且有重複，會報錯。
+                        )
+                    else:
+                        # 沒有分組，直接選取 X 和 Y，並以 X (時間) 作為索引
+                        pivot_df = df[[x_column, y_column]].copy()
+                        pivot_df = pivot_df.drop_duplicates(subset=[x_column], keep='first') # 處理可能的重複時間戳
+                        pivot_df = pivot_df.set_index(x_column)
+
+                    # --- 合併基線數據 ---
+                    if not baseline_df.empty:
+                        # 使用 left join 將基線數據合併到 pivot_df 上
+                        final_df = pivot_df.join(baseline_df, how='left')
+                    else:
+                        final_df = pivot_df
+
+                    # --- 重設索引，讓時間變回普通欄位 ---
+                    final_df = final_df.reset_index()
+
+                    # --- 寫入重塑後的數據 ---
+                    final_df.to_excel(writer, sheet_name=f"{sheet}_{y_column}", index=False)
+
+                except ValueError as ve:
+                     self.async_print(f"[錯誤] 在 {sheet} 重塑欄位 {y_column} 時發生錯誤 (可能原因：同個 loop 在同個時間點有重複數據): {ve}")
+                     QMessageBox.critical(self, "Pivot 錯誤", f"在工作表 {sheet} 處理欄位 {y_column} 時發生錯誤。\n\n請檢查原始數據中，同一個設備群組 ({group_column}) 是否在同一個時間點 ({x_column}) 有多筆記錄。\n\n錯誤訊息：{ve}")
+                     continue
+                except Exception as e:
+                    self.async_print(f"[錯誤] 在 {sheet} 重塑欄位 {y_column} 時發生未知錯誤: {e}")
+                    continue
+
+        self.async_print("Excel 數據重塑完成！") # Message updated
+
+    def process_chart(self, output_file):
+        self.async_print("正在處理圖表...")
+
+        workbook = load_workbook(output_file)
+        y_columns = [item.text() for item in self.y_list.selectedItems()]
+
+        for sheet in self.sheet_names:
+            for y_column in y_columns:
+                chart_sheet_name = f"{sheet}_{y_column}"
+                
+                self.async_print(f"正在處理工作表：{chart_sheet_name}")
+
+                worksheet = workbook[chart_sheet_name]
+
+                max_row = worksheet.max_row
+                max_col = worksheet.max_column
+                
+                # 建立折線圖並設置基礎樣式
+                chart = LineChart()
+                chart.title = f"{chart_sheet_name}"
+                chart.style = 13
+                chart.width = 30
+                chart.height = 16
+                chart.legend.delete = False
+                chart.legend.overlay = False
+                chart.legend.legendPos = 'r'
+
+                # 設定資料範圍
+                data = Reference(worksheet, min_col=2, min_row=1, max_col=max_col, max_row=max_row)
+                categories = Reference(worksheet, min_col=1, min_row=2, max_row=max_row)
+
+                # 設定 x 軸為文字型座標軸，y 軸為數字型座標軸
+                chart.x_axis = TextAxis()
+                chart.y_axis = NumericAxis()
+
+                # 顯示 x 軸與 y 軸
+                chart.x_axis.delete = False
+                chart.y_axis.delete = False
+
+                # 關閉自動調整 x 軸
+                chart.x_axis.auto = False
+
+                # 設定 x 軸標籤位置
+                chart.x_axis.tickLblPos = 'low'
+
+                chart.add_data(data, titles_from_data=True)
+                chart.set_categories(categories)
+
+                worksheet.add_chart(chart, f"{get_column_letter(max_col + 2)}4")
+
+        workbook.save(output_file)
+        self.async_print("圖表處理完成！")
+    
+    def convert_to_chart(self):
+        if not self.status_check():
+            return
+
+        output_file = self.output_filename.text() + ".xlsx"
+        self.async_print(f"準備輸出檔案：{output_file}")
+
+        try:
+            # 使用 with 陳述式確保 writer 正確關閉和保存
+            with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
+                self.process_excel(writer) # process_excel 不再調用 save
+
+            # 僅在 Excel 寫入成功後才進行圖表處理
+            self.process_chart(output_file)
+            self.async_print(f"轉換完成！檔案已儲存至 {output_file}")
+
+        except Exception as e:
+            self.async_print(f"[嚴重錯誤] 在轉換過程中發生錯誤: {e}")
+            QMessageBox.critical(self, "轉換失敗", f"處理過程中發生錯誤，轉換可能未完成。\n\n錯誤詳情：{e}")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = CSVToChart()
+    window.show()
+    sys.exit(app.exec_())
+```
+
+### requirements.txt
+
+```plaintext:requirements.txt
+openpyxl==3.1.5
+pandas==2.2.3
+PyQt5==5.15.11
+PyQt5_sip==12.17.0
+et_xmlfile==2.0.0
+```

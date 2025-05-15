@@ -1,0 +1,30 @@
+---
+title: Sleep
+description: Easy - [JS 30] 2621. Sleep
+date: 2023-12-22
+tags: []
+leetcodeID: 2621
+difficulty: Easy
+draft: false
+---
+
+## LeetCode 練習 - 2621. Sleep
+> Javascript  
+> Javascript 30 天系列
+
+## 題目分析
+給一正整數 **millis**，寫一個異步函式，在 **millis** 毫秒後進行睡眠。它可以 **resolve** 任何值。
+
+## 最終結果
+
+```js:sleep.js
+/**
+ * @param {number} millis
+ * @return {Promise}
+ */
+async function sleep(millis) {
+    return new Promise((resolve) => setTimeout(resolve, millis));
+}
+```
+
+## 解題思路
