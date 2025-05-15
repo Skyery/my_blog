@@ -1,0 +1,280 @@
+---
+title: Pi - 樹莓派常用操作筆記
+description: 關於 樹莓派的設定、服務、網路管理等常用操作筆記。
+date: 2024/10/18
+tags: ['Raspberry Pi', 'Raspberry', 'Pi', '樹莓派']
+draft: false
+---
+
+## boot/config - 啟動設定
+
+避免在7寸螢幕中超出邊界，確認需有以下設定
+
+```bash
+# Model 3B/4B sudo nano /boot/config.txt
+# Model 5 sudo nano /boot/firmware/config.txt
+
+hdmi_group=2
+hdmi_mode=9
+disable_overscan=1
+```
+
+相關設定參考
+
+### hdmi_group=1 電視模式 (CEA)
+
+| hdmi_mode | 解析度            | 更新率 (Hz) |
+|-----------|-------------------|-------------|
+| 1         | 640x480           | 60          |
+| 4         | 1280x720 (720p)   | 60          |
+| 5         | 1920x1080 (1080i) | 60          |
+| 16        | 1920x1080 (1080p) | 60          |
+| 31        | 1920x1080 (1080p) | 50          |
+| 32        | 1920x1080 (1080p) | 24          |
+| 33        | 1920x1080 (1080p) | 25          |
+| 34        | 1920x1080 (1080p) | 30          |
+| 95        | 3840x2160 (4K)    | 30          |
+| 97        | 3840x2160 (4K)    | 60          |
+
+### hdmi_group=2 電腦顯示器模式 (DMT)
+
+| hdmi_mode | 解析度                    | 更新率 (Hz) |
+|-----------|---------------------------|-------------|
+| 9         | 800x600                   | 60          |
+| 16        | 1024x768                  | 60          |
+| 35        | 1280x1024                 | 60          |
+| 39        | 1366x768                  | 60          |
+| 51        | 1600x1200                 | 60          |
+| 58        | 1680x1050                 | 60          |
+| 82        | 1920x1080                 | 60          |
+| 85        | 1280x720                  | 60          |
+| 86        | 1366x768                  | 60          |
+| 87        | 自訂解析度（需要 hdmi_cvt） | -           |
+| 88        | 2560x1600                 | 60          |
+
+### 自訂解析度 (hdmi_mode=87)
+
+```bash
+hdmi_group=2
+hdmi_mode=87
+# width height framerate aspect margins interlace reduced
+hdmi_cvt=1024 600 60 3 0 0 0
+```
+
+## NetWorkManager
+
+### 查看網路狀態和資訊
+
+```bash
+# 查看整體網路狀態
+nmcli general status
+# 查看所有網路設備及其狀態
+nmcli device status
+# 查看所有活動的連線設定檔
+nmcli connection show
+# 查看特定連線的詳細設定
+nmcli connection show ["<連線名稱>" | <UUID>]
+# 查看特定設備的詳細資訊
+nmcli device show eth0
+```
+
+### 管理網路連線 (啟用/停用)
+
+```bash
+# 停用連線
+nmcli connection down ["<連線名稱>" | id <SSID> | uuid <UUID>]
+# 啟用連線
+nmcli connection up ["<連線名稱>" | id <SSID> | uuid <UUID>]
+# 斷開一個設備的連線
+nmcli device disconnect eth0
+# 重新連線一個設備
+nmcli device connect eth0
+# 完全啟用/停止網路功能
+nmcli networking [off | on]
+```
+
+### 修改連線設定
+
+```bash
+# 設定為手動 (靜態) IP
+nmcli con mod "<連線名稱>" ipv4.method manual
+# 設定 IP 位址盒子網路遮罩 (CIDR)
+nmcli con mod "<連線名稱>" ipv4.address "10.11.12.13/8"
+# 設定閘道
+nmcli con moe "<連線名稱>" ipv4.gateway "10.0.0.1"
+# 設定 DNS 伺服器
+nmcli con mod "<連線名稱>" ipv4.dns "8.8.8.8 4.4.4.4"
+# 設定 DNS 搜尋域
+nmcli con mod "<連線名稱>" ipv4.dns-search "mydomain.local example.com"
+# 設定從不將此連線作為預設路由
+nmcli con mod "<連線名稱>" ipv4.never-default [yes | no]
+
+# 重新啟動連線以套用設定
+nmcli con down "<連線名稱>" && nmcli con up "<連線名稱>"
+# 重新載入所有連線設定
+nmcli con reload
+# 要求設備 eth0 重新評估並應用其連線
+nmcli dev reapply eth0
+
+# 將連線改回 DHCP
+nmcli con mod "<連線名稱>" ipv4.method auto
+nmcli con mod "<連線名稱>" ipv4.address ""
+nmcli con mod "<連線名稱>" ipv4.gateway ""
+nmcli con mod "<連線名稱>" ipv4.dns ""
+# 重啟連線
+nmcli con down "<連線名稱>" && nmcli con up "<連線名稱>"
+```
+
+### Wi-Fi 操作
+
+```bash
+# 掃描可用 Wi-Fi 網路
+nmcli device wifi list
+
+# 連接到一個 Wi-Fi 網路
+nmcli device wifi connect "<SSID>" password "<Password>"
+# 指定連線名稱 (如果想自訂，否則會自動生成)
+# nmcli device wifi connect "<SSID>" password "<Password>" name "<Custom Name>"
+# 連線到隱藏 SSID
+# nmcli device wifi connect "<SSID>" password "<Password>" hidden yes
+
+# 斷開當前 Wi-Fi 連線
+nmcli device disconnect wlan0
+# 刪除 Wi-Fi 連線設定
+nmcli connection delete ["<SSID>" | <UUID>]
+
+# 設定為手動 (靜態) IP
+nmcli con mod "<SSID>" ipv4.method manual
+nmcli con mod "<SSID>" ipv4.addresses "192.168.1.101/24"
+nmcli con mod "<SSID>" ipv4.gateway "192.168.1.1"
+nmcli con mod "<SSID>" ipv4.dns "8.8.8.8"
+nmcli con down "<SSID>" && nmcli con up "<SSID>"
+```
+
+## dhcpcd.conf
+
+用於樹莓派 (Model 3B/4B) 網路管理
+
+```bash
+# sudo nano /etc/dhcpcd.conf
+
+interface eth0
+static ip_address=10.11.12.13/8
+static routers=
+static domain_name_servers=
+static domain_search=
+
+interface wlan0
+static ip_address=
+static routers=
+static domain_name_servers=
+static domain_search=
+```
+
+## wpa_supplicant - Wifi 連線管理
+
+| 參數 | 說明 |
+| --- | --- |
+| ssid | Wi-Fi 熱點的名稱 (SSID)，區分大小寫。 |
+| psk | Wi-Fi 密碼 (WPA/WPA-PSK 方式) |
+| key_mgmt | 指定 Wi-Fi 的加密方式： <br /> - `WPA-PSK`： WPA/WPA2-個人板 (最常見)<br /> - `WPA-EAP`： WPA 企業板 (RADIUS 伺服器認證)<br /> - `NONE`： 開放式 Wi-Fi 無密碼 |
+| priority | Wi-Fi 優先級 (數字越大，優先連接)。若有多個 `network` 設定時會依據此項優先連接。 |
+
+```bash
+# sudo nano /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=TW
+
+# [範例] 連接無密碼開放 Wi-Fi
+network={
+        ssid="WiFi 名稱"
+        key_mgmt=NONE
+}
+
+# [範例] 連接 WPA/WPA2
+network={
+        ssid="WiFi 名稱"
+        psk="WiFi 密碼"
+        key_mgmt=WPA-PSK
+}
+
+# [範例] 連接 WPA2-Enterprise（RADIUS 認證）
+network={
+        ssid="企業 WiFi"
+        key_mgmt=WPA-EAP
+        eap=PEAP
+        identity="帳號"
+        password="密碼"
+        phase2="auth=MSCHAPV2"
+}
+```
+
+## PM2 
+
+### 啟動應用
+
+```bash
+# 啟動 JS 檔案
+sudo pm2 start app.js
+# 啟動並命名
+sudo pm2 start app.js --name my-app
+# 啟動 JSON 組態設定
+sudo pm2 start ecosystem.config.js
+# 啟動 TypeScript 檔案
+sudo pm2 start app.js --interpreter ts-node
+```
+
+### 監控與管理
+
+```bash
+# 查看目前執行的服務列表
+sudo pm2 list
+# 查看日誌
+sudo pm2 logs [<id> | <服務名稱>]
+# 查看特定服務詳細情況
+sudo pm2 describe [<id> | <服務名稱>]
+# 即時監控 (監控 CPU、記憶體..等)
+sudo pm2 monit
+```
+
+### 進程操作
+
+```bash
+# 重啟服務
+sudo pm2 restart [all | <id> | <服務名稱>]
+# 停止服務
+sudo pm2 stop [all | <id> | <服務名稱>]
+# 刪除服務
+sudo pm2 delete [all | <id> | <服務名稱>]
+# 重載 (無斷線重啟)
+sudo pm2 reload [all | <id> | <服務名稱>]
+```
+
+### 服務應用保存與開機自啟動
+
+```bash
+# 儲存目前進程
+sudo pm2 save
+# 建立開機啟動
+sudo pm2 startup
+# 解除開機啟動
+sudo pm2 unstartup
+```
+
+## PM2-logrotate
+
+```bash
+# 顯示 pm2-logrotate 資訊
+sudo pm2 show pm2-logrotate
+
+# 單個 log 文件最大容量 10M
+sudo pm2 set pm2-logrotate:max_size 2M
+# 是否壓縮舊的 log 文件
+sudo pm2 set pm2-logrotate:compress true
+# 保留最近 7 天的 log 文件
+sudo pm2 set pm2-logrotate:retain 5
+# 檢查頻率 (1小時，單位: Second)
+sudo pm2 set pm2-logrotate:workerInterval 3600
+```

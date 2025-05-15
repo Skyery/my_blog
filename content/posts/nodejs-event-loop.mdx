@@ -1,0 +1,93 @@
+---
+title: NodeJS - 關於 Event Loop - 事件循環
+description: 關於 Event Loop - 事件循環的一些筆記。
+date: 2024/07/27
+tags: ['Node.js', 'Event-Loop', '事件循環']
+draft: false
+---
+
+## Event Loop - 事件循環
+
+1. 執行同步程式碼 (Script Execution)
+    - 所有不是 `Callback` 函式或異步操作的 `JavaScript` 程式碼會首先被執行
+2. 處理 process.nextTick queue 和 Microtask queue
+    - 在同步程式碼執行完畢後，立即清空 process.nextTick queue
+    - 然後，立即清空 Microtask 隊列 (e.g. Promise.then/catch/finally)
+3. 進入事件循環 (Event Loop Starts)，循環會持續，直到沒有待處理的 event 或 callback。
+    - timers 階段
+        - 執行所有到期的 setTimeout 和 setInterval callback
+        - 階段結束後，清空 process.nextTick queue，然後清空 Microtask queue
+    - pending callbacks 階段
+        - 執行大部分 I/O callback
+        - 階段結束後，清空 process.nextTick queue，然後清空 Microtask queue
+    - idle, prepare 階段
+        - 僅內部使用。
+        - 清空 process.nextTick queue，然後清空 Microtask queue
+    - poll 階段
+        - 檢索新的 I/O 事件；執行與 I/O 相關的 callback（幾乎所有 callback，除了 close callbacks, timers, setImmediate）
+        - 如果 poll queue 不為空，則執行 callback 直到 queue 清空或達到限制
+        - 如果 poll queue 為空：
+            - 如果有 setImmediate() 排程，則結束 poll 階段，進入 check 階段
+            - 如果沒有 setImmediate() 排程，則等待新的 I/O 事件，然後立即執行
+        - 階段結束後，清空 process.nextTick queue，然後清空 Microtask queue
+    - check 階段
+        - 執行 setImmediate() callback。
+        - 階段結束後，清空 process.nextTick queue，然後清空 Microtask queue
+    - close callbacks 階段
+        - 執行 close event callback (e.g. socket.on('close', ...))
+        - 階段結束後，清空 process.nextTick queue，然後清空 Microtask queue
+
+### 經典的 `Node.js` 事件循環題目
+
+```js:event-loop.js
+console.log('start');                       // 同步：立即執行
+
+process.nextTick(function () {
+    console.log('nextTick1');               // nextTick queue（microtask）
+});
+
+setTimeout(function () {
+    console.log('setTimeout');              // timers phase（macrotask）
+}, 0);
+
+new Promise(function (resolve, reject) {
+    console.log('promise');                 // 同步：立即執行
+    resolve('resolve');
+}).then(function (result) {
+    console.log('promise then');            // microtask queue（Promise）
+});
+
+(async function () {
+    console.log('async');                   // 同步：立即執行（async 函式內部無 await）
+})();
+
+setImmediate(function () {
+    console.log('setImmediate');            // check phase（macrotask）
+});
+
+process.nextTick(function () {
+    console.log('nextTick2');               // nextTick queue（microtask）
+});
+
+console.log('end');                         // 同步：立即執行
+```
+
+### 執行順序
+
+```txt
+start
+promise
+async
+end
+nextTick1
+nextTick2
+promise then
+setTimeout
+setImmediate
+```
+
+---
+
+## 參考資料
+
+[完整圖解Node.js的Event Loop(事件迴圈) - AndyWu's Notes](https://notes.andywu.tw/2020/%E5%AE%8C%E6%95%B4%E5%9C%96%E8%A7%A3node-js%E7%9A%84event-loop%E4%BA%8B%E4%BB%B6%E8%BF%B4%E5%9C%88/)
