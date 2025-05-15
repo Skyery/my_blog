@@ -7,87 +7,87 @@ draft: false
 ---
 
 ## PermissionRolePractice
-> laravel 10 | PHP 8.2  
-> 練習以 laravel 建置權限系統並部屬至GCP(Google Cloud Platform)  
-> GitHub: [https://github.com/Skyery/PermissionRolePractice](https://github.com/Skyery/PermissionRolePractice)  
+> laravel 10 | PHP 8.2
+> 練習以 laravel 建置權限系統並部屬至GCP(Google Cloud Platform)
+> GitHub: [https://github.com/Skyery/PermissionRolePractice](https://github.com/Skyery/PermissionRolePractice)
 
 ## 簡述 & 操作流程
-在寫了1年多的 **VB.Net** 後，突然想嘗試看看其他後端框架。  
-就選了 **PHP & Laravel** 來看看這之間的差異性，剛好工作上正在重構有關 **用戶權限** 的系統，正好就拿這部份來嘗鮮了。  
-不過主要還是因為我沒有在雲端上架設過網站，工作上也都是由主管設定伺服器。  
-所以我基本上都是在已部屬好的環境下進行網站開發。  
-本來是想說自己弄台 NAS 來玩，但後來聽主管的建議直接上雲端就選了 GCP。  
-<small>先打個預防針，本人非本科系是個自學半路出家的小白，如果讓你有快中風的操作還請見諒 XD。</small>  
+在寫了1年多的 **VB.Net** 後，突然想嘗試看看其他後端框架。
+就選了 **PHP & Laravel** 來看看這之間的差異性，剛好工作上正在重構有關 **用戶權限** 的系統，正好就拿這部份來嘗鮮了。
+不過主要還是因為我沒有在雲端上架設過網站，工作上也都是由主管設定伺服器。
+所以我基本上都是在已部屬好的環境下進行網站開發。
+本來是想說自己弄台 NAS 來玩，但後來聽主管的建議直接上雲端就選了 GCP。
+<small>先打個預防針，本人非本科系是個自學半路出家的小白，如果讓你有快中風的操作還請見諒 XD。</small>
 
 * [後台簡述](#permission_role_user)
 * [建立 GCP VM 執行個體](#create_vm)
 * [使用 SSH 建立使用者並設定安全殼層金鑰](#set_ssh)
 * [部屬環境及安裝所需套件](#deployment_environment)
-* [套上 Domain 並使用 Nginx 設定 HTTPS 建立自行簽屬 SSL 憑證](#set_domain_and_ssl)  
+* [套上 Domain 並使用 Nginx 設定 HTTPS 建立自行簽屬 SSL 憑證](#set_domain_and_ssl)
 
 <a id="permission_role_user"></a>
 ### 後台簡述
-主要目標設定在設計出：  
+主要目標設定在設計出：
 * 讓管理者可以輕鬆的從後台管理用戶身分及權限
-* 使網站能透過 **權限系統** 做出用戶分流  
-  
+* 使網站能透過 **權限系統** 做出用戶分流
+
 #### 使用套件 & 工具
-> Laravel Breeze / Spatie-Laravel Permission  
-> Laravel Blade / Tailwind CSS  
+> Laravel Breeze / Spatie-Laravel Permission
+> Laravel Blade / Tailwind CSS
 
 #### Route 設計
-由 **root/admin** 作為後台的進入點並以 **middleware** 限制特定身分用戶進入。  
+由 **root/admin** 作為後台的進入點並以 **middleware** 限制特定身分用戶進入。
 1. Role - 身分
 於 **/roles** 路由中除了 **CRUD** 外還需包含 **權限(permission)** 的 give 以及 revoke。
 2. Permission - 權限
 於 **/permissions** 路由中除了 **CRUD** 外還需包含 **身分(role)** 的 assign 以及 remove。
 3. User - 用戶
-於 **/users** 需包含 **軟刪除用戶** 及 **身分(role)** 的分配 assign 以及 remove。  
+於 **/users** 需包含 **軟刪除用戶** 及 **身分(role)** 的分配 assign 以及 remove。
 
 <a id="create_vm"></a>
 ### 建立 GCP VM 執行個體
-首先當然需要先註冊一個 [GCP](https://cloud.google.com/) 帳號，流程就不多說明了。  
-進入主控台後建立一個新的專案，找到 **Compute Engine** → **VM 執行個體**，建立執行個體。  
+首先當然需要先註冊一個 [GCP](https://cloud.google.com/) 帳號，流程就不多說明了。
+進入主控台後建立一個新的專案，找到 **Compute Engine** → **VM 執行個體**，建立執行個體。
 
-![VM 執行個體](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/GCP_VM%E5%9F%B7%E8%A1%8C%E5%80%8B%E9%AB%94_1.png?raw=true)  
+![VM 執行個體](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/GCP_VM%E5%9F%B7%E8%A1%8C%E5%80%8B%E9%AB%94_1.png?raw=true)
 
-設定主機名稱、在 **管理標記和標籤** 設定主機位置以及主機的規格。(我是選預設值，畢竟是練習..)  
+設定主機名稱、在 **管理標記和標籤** 設定主機位置以及主機的規格。(我是選預設值，畢竟是練習..)
 
-![主機規格與區域](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/GCP_VM%E5%9F%B7%E8%A1%8C%E5%80%8B%E9%AB%94_3.png?raw=true)  
+![主機規格與區域](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/GCP_VM%E5%9F%B7%E8%A1%8C%E5%80%8B%E9%AB%94_3.png?raw=true)
 
-設定主機 **開機磁碟**，作業系統選擇 **Ubuntu** 開機磁碟類型選擇 **SSD 永久磁碟**  
+設定主機 **開機磁碟**，作業系統選擇 **Ubuntu** 開機磁碟類型選擇 **SSD 永久磁碟**
 
-![開機磁碟設定](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/GCP_VM%E5%9F%B7%E8%A1%8C%E5%80%8B%E9%AB%94_4.png?raw=true)  
+![開機磁碟設定](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/GCP_VM%E5%9F%B7%E8%A1%8C%E5%80%8B%E9%AB%94_4.png?raw=true)
 
-設定主機 **防火牆** 將 **允許 HTTP 流量** 以及 **允許 HTTPS 流量** 勾選，以上就完成設定可以點選 **建立** 啦。  
+設定主機 **防火牆** 將 **允許 HTTP 流量** 以及 **允許 HTTPS 流量** 勾選，以上就完成設定可以點選 **建立** 啦。
 
-![防火牆設定](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/GCP_VM%E5%9F%B7%E8%A1%8C%E5%80%8B%E9%AB%94_5.png?raw=true)  
+![防火牆設定](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/GCP_VM%E5%9F%B7%E8%A1%8C%E5%80%8B%E9%AB%94_5.png?raw=true)
 
 <a id="set_ssh"></a>
 ### 使用 SSH 建立使用者並設定安全殼層金鑰
-使用 [PuTTY](https://www.putty.org/) 的 **PuTTYgen** 建立金鑰，點選 **Generate** 後再紅框處晃動滑鼠，透過滑鼠軌跡產生金鑰。  
+使用 [PuTTY](https://www.putty.org/) 的 **PuTTYgen** 建立金鑰，點選 **Generate** 後再紅框處晃動滑鼠，透過滑鼠軌跡產生金鑰。
 
-![產生金鑰](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/SSH_1.png?raw=true)  
+![產生金鑰](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/SSH_1.png?raw=true)
 
-金鑰產生後修改 **用戶名稱** 這會是之後 SSH 連線後的用戶名稱，再輸入 SSH 連線時的密碼。  
+金鑰產生後修改 **用戶名稱** 這會是之後 SSH 連線後的用戶名稱，再輸入 SSH 連線時的密碼。
 最後別忘記點選 **Save public key** 及 **Save private key** 儲存公鑰及私鑰。
 
-![產生金鑰](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/SSH_2.png?raw=true)  
+![產生金鑰](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/SSH_2.png?raw=true)
 
-再回到 [GCP](https://cloud.google.com/) 控制台，點選你的 **主機名稱** → **編輯**，找到 **安全殼層金鑰** 點選 **新增項目** 將剛剛產生出來的那一長串key貼上，最後記得儲存，到這裡PuTTYgen就能關掉了。  
+再回到 [GCP](https://cloud.google.com/) 控制台，點選你的 **主機名稱** → **編輯**，找到 **安全殼層金鑰** 點選 **新增項目** 將剛剛產生出來的那一長串key貼上，最後記得儲存，到這裡PuTTYgen就能關掉了。
 
-![設定安全殼層](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/SSH_3.png?raw=true)  
+![設定安全殼層](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/SSH_3.png?raw=true)
 
-打開 **PuTTY** 在 **Host Name (or IP address)** 輸入 **用戶名稱@GCP對外IP**。  
+打開 **PuTTY** 在 **Host Name (or IP address)** 輸入 **用戶名稱@GCP對外IP**。
 左設選單找到 **Connection** → **SSH** → **Auth** → **Credentials** 在紅框處選到剛剛儲存下來的私鑰，再回到 **Session** 在 **Saved Sessions** 命名這個SSH連線後按下 **Save** 這樣下次就不用重新設定了。
 
-![設定PuTTY](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/SSH_4.png?raw=true)  
+![設定PuTTY](https://github.com/Skyery/PermissionRolePractice/blob/master/readme/SSH_4.png?raw=true)
 
-最後嘗試 SSH 連線，點選 **Open** 輸入剛剛在PuTTYgen設定的用戶密碼。  
+最後嘗試 SSH 連線，點選 **Open** 輸入剛剛在PuTTYgen設定的用戶密碼。
 
 <a id="deployment_environment"></a>
 ### 部屬環境及安裝所需套件
-這邊接下來就是開始打指令了，<strike>指令恐懼的可以先 **Ctrl + D** 了。</strike>  
+這邊接下來就是開始打指令了，<strike>指令恐懼的可以先 **Ctrl + D** 了。</strike>
 
 #### 前置作業
 ```bash
@@ -99,7 +99,7 @@ $ sudo apt autoremove
 
 # 檢查是否需要重新開機以啟用更新項目
 $ [ -f /var/run/reboot-required ] && sudo reboot -f
-```  
+```
 
 #### 安裝 PHP
 ```bash
@@ -120,7 +120,7 @@ $ sudo apt-get install -y php8.2-cli php8.2-common php8.2-fpm php8.2-mysql php8.
 
 # 這個指令可以看到目前已載入的套清單
 $ php -m
-```  
+```
 
 #### 安裝 Composer
 ```bash
@@ -135,7 +135,7 @@ $ sudo composer self-update
 
 # 檢查 Composer 版本
 $ composer -v
-```  
+```
 
 #### 安裝 MySQL-Server
 ```bash
@@ -180,7 +180,7 @@ use {database_name};
 
 # 查看目前的資料表列表
 show tables; (現在是空的)
-```  
+```
 
 #### 安裝 Nginx
 ```bash
@@ -234,7 +234,7 @@ $ sudo nano /etc/nginx/sites-available/default
 
 # 修改完成後，讓 Nginx 重新載入設定
 $ sudo nginx -s reload
-```  
+```
 
 #### 安裝 NPX
 ```bash
@@ -253,7 +253,7 @@ $ nvm install v16.20.2
 # 檢查 node.js & npm 版本
 $ node -v
 $ npm -v
-```  
+```
 
 #### 透過 Git 部屬專案
 ```bash
@@ -288,14 +288,14 @@ $ cd /{path_to_your_laravel_project}
 $ sudo chown -R {user}.www-data .
 $ sudo chmod -R 2770 ./storage/
 $ sudo chmod 660 ./.env
-```  
+```
 
-到這裡總算是部屬完成，可以透過 [GCP](https://cloud.google.com/) 提供的 `外部IP` 進入剛剛架設的網站了。  
+到這裡總算是部屬完成，可以透過 [GCP](https://cloud.google.com/) 提供的 `外部IP` 進入剛剛架設的網站了。
 
 <a id="set_domain_and_ssl"></a>
 ### 套上 Domain 並使用 Nginx 設定 HTTPS 建立自行簽屬 SSL 憑證
-1. 在 [No-ip](https://my.noip.com/) 上申請 Domain，或者其他家的，這部分就不多做說明請左轉 [Google](https://www.google.com) 大神。  
-2. SSL 的部分是使用 [Let’s Encrypt](https://letsencrypt.org/zh-tw/)，只是憑證的有效期限是90天，所以透過 [certbot](https://certbot.eff.org/) 自動續命。  
+1. 在 [No-ip](https://my.noip.com/) 上申請 Domain，或者其他家的，這部分就不多做說明請左轉 [Google](https://www.google.com) 大神。
+2. SSL 的部分是使用 [Let’s Encrypt](https://letsencrypt.org/zh-tw/)，只是憑證的有效期限是90天，所以透過 [certbot](https://certbot.eff.org/) 自動續命。
 ```bash
 # 安裝 Snapd
 $ sudo apt install snapd

@@ -7,12 +7,12 @@ draft: false
 ---
 
 ## 撲克牌遊戲 - 牌組
-> Javascript  
+> Javascript
 > 撲克牌 - 透過打亂產生牌組、抽牌、比大小等功能。
 
 ## 簡述
 因為某一農曆年假前，
-主管靈光一閃的提出想透過物連網方式來做撲克牌遊戲。  
+主管靈光一閃的提出想透過物連網方式來做撲克牌遊戲。
 雖然到最後並沒有真的成立這個專案，
 但我還是嘗試將我認為的基本功能給寫了出來，也以此作為練習。
 
@@ -73,7 +73,7 @@ export default class Deck{
 
     // 將手牌轉為字串
     handDisplay(hand, sort = true){
-        return sort 
+        return sort
             ? this.sortHand(hand.reduce((obj, item) =>{
                 obj.push(`${this.NUMBERS[item % this.NUM_VALUES_IN_DECK]}${this.SUITS[Math.floor(item / this.NUM_VALUES_IN_DECK)]}`);
                 return obj;
@@ -113,7 +113,7 @@ export default class Deck{
     // 是否為同花
     isFlush(hand, len = 5, returnResult = false){
         return returnResult
-            ? [...this.SUITS.join('')].map(s => 
+            ? [...this.SUITS.join('')].map(s =>
                 hand.map(c => (c.match(s) && 2<<this.NUMBERS.search(c[0])) ? c : "").filter(String).length >= len
                     ? hand.map(c => (c.match(s) && 2<<this.NUMBERS.search(c[0])) ? c : "").filter(String) : "").filter(String)
             : [...this.SUITS.join('')].some(s => hand.map(c => (c.match(s) && 2<<this.NUMBERS.search(c[0])) ? c : "").filter(String).length >= len);
@@ -143,14 +143,14 @@ export default class Deck{
             pair: values.filter((count) => count === 2).length >= 1,
             high_card: true
         }
-        
+
         ranks.full_house = ranks.trips && ranks.pair;
         ranks.royal_flush = ranks.straight_flush && firstCardIdx === this.TEN_CARD_POSITION;
 
         let rankIdx = 0;
         let rankDescription = "";
         let rankStage = 0;
-        
+
         Object.keys(ranks).every((key, idx) => {
             rankIdx = 10 - idx;
             rankDescription = key;
@@ -183,7 +183,7 @@ export default class Deck{
 
         const rank_a = this.rankHand(this.rawHand(hand_a));
         const rank_b = this.rankHand(this.rawHand(hand_b));
-        
+
         // For Debug
         console.log(rank_a);
         console.log(rank_b);
@@ -212,7 +212,7 @@ export default class Deck{
                     }else{
                         return (SFNum_1[0] === 8) ? "true" : "false";
                     }
-                case 2: // 鐵支 
+                case 2: // 鐵支
                     const QDNum_1 = rank_a.values.map((v, i) => v === 4 ? i : '').filter(String);
                     const QDNum_2 = rank_b.values.map((v, i) => v === 4 ? i : '').filter(String);
                     return (parseInt(Math.max(...QDNum_1)) > parseInt(Math.max(...QDNum_2)))
