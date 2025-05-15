@@ -10,7 +10,7 @@ draft: false
 
 ### enum
 
-`enum` 是一種特殊型別，用來定義一組具名常數。  
+`enum` 是一種特殊型別，用來定義一組具名常數。
 它不是像 `string` 或 `number` 等基本型別，而是允許將一組常數進行命名，讓程式碼更加清晰和可讀。
 
 ```ts
@@ -27,8 +27,8 @@ console.log(move)   // "UP"
 
 ### any
 
-any 類型表示可以是任何型別，放寬了 TypeScript 的類型檢查。  
-它是最不安全的型別，因為它不會執行類型檢查，這會讓開發者可以在編譯時跳過檢查。  
+any 類型表示可以是任何型別，放寬了 TypeScript 的類型檢查。
+它是最不安全的型別，因為它不會執行類型檢查，這會讓開發者可以在編譯時跳過檢查。
 
 雖然 `any` 很方便，但會失去 `TypeScript` 的靜態類型檢查的優勢，應盡可能的避免使用。
 
@@ -91,7 +91,7 @@ function logMessage(message: string): void {
 }
 ```
 
-`void` 型別的變數是 `undefined`，但不建議直接給它賦值。  
+`void` 型別的變數是 `undefined`，但不建議直接給它賦值。
 違反了 `void` 的設計初衷，也可能會造成不必要的困惑。
 
 ```ts
@@ -105,7 +105,7 @@ value = undefined
 
 ### nerver
 
-`never` 類型用來表示永遠不會有任何值的類型。  
+`never` 類型用來表示永遠不會有任何值的類型。
 通常用於無法正常結束的函數，如會拋出錯誤的函數或無限循環的函數。
 
 ```ts
@@ -118,7 +118,7 @@ function inifiniteLoop(): never {
 }
 ```
 
-`never` 也可以用來確保 `TypeScript` 的類型判斷是完整。  
+`never` 也可以用來確保 `TypeScript` 的類型判斷是完整。
 假設日後 `Status` 被擴展，而又忘記 `switch` 的處理，`TypeScript` 會報錯，可以確保代碼完整性。
 
 ```ts
@@ -135,7 +135,7 @@ function processStatus(status: Status) {
         case Status.Failure:
             console.log("Failure！");
             break;
-        default: 
+        default:
             // TypeScript 會在這裡報錯（如果 status 有新值）
             const unreachable: never = status;
             throw new Error(`Unexpected status: ${status}`);
@@ -164,8 +164,8 @@ console.log(null + 1);      // 1，因為 null 會轉換為 0
 
 #### undefined
 
-`undefined` 類型表示一個未定義的變數。  
-當變數被聲明但尚未賦值時，它的預設值就是 `undefined`。  
+`undefined` 類型表示一個未定義的變數。
+當變數被聲明但尚未賦值時，它的預設值就是 `undefined`。
 
 ```ts
 let value: undefined = undefined;

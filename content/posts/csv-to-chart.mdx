@@ -8,8 +8,8 @@ draft: false
 
 ## 簡述
 
-工作上時常需要分析IOT設備所收集的 `rawData`，但通常資料量都相對龐大，很難直接一眼從CSV直接看出問題。  
-早些時期需要分析的需求算少，都是手動操作 `Excel` 進行圖表的繪製。  
+工作上時常需要分析IOT設備所收集的 `rawData`，但通常資料量都相對龐大，很難直接一眼從CSV直接看出問題。
+早些時期需要分析的需求算少，都是手動操作 `Excel` 進行圖表的繪製。
 隨著分析需求需求上升，就有了把這個任務交給程式來處理的想法。
 
 ## 程式碼
@@ -94,7 +94,7 @@ class CSVToChart(QWidget):
         x_layout.addWidget(self.x_combobox, 1, 1)  # 第二行第二列
 
         x_layout.setColumnStretch(0, 1)  # 寬度比例 1 : 2
-        x_layout.setColumnStretch(1, 2)  
+        x_layout.setColumnStretch(1, 2)
 
         layout.addLayout(x_layout)  # 加入主 Layout
 
@@ -144,14 +144,14 @@ class CSVToChart(QWidget):
         if file_path:
             self.label.setText(f"選擇的檔案: {file_path}")
             self.load_excel(file_path)
-    
+
     def load_excel(self, file_path):
         self.async_print(f"正在載入： {Path(file_path).name}")
 
         self.sheet_names = pd.ExcelFile(file_path).sheet_names
         self.excel_file = pd.ExcelFile(file_path)
         self.excel_data = pd.read_excel(file_path)
-        
+
         self.group_combobox.clear()
         self.x_combobox.clear()
         self.y_list.clear()
@@ -199,14 +199,14 @@ class CSVToChart(QWidget):
         x_column = self.x_combobox.currentText()
         y_columns = [item.text() for item in self.y_list.selectedItems()]
         extra_y_columns = [item.text() for item in self.extra_y_list.selectedItems()]
-        
+
         # 如果啟用群組，則將 group_column 包含在 required_columns 中
         required_columns_base = [x_column] + y_columns + extra_y_columns
         required_columns = required_columns_base + ([group_column] if is_group and group_column else [])
 
         for sheet in self.sheet_names:
             self.async_print(f"正在處理工作表：{sheet}")
-            
+
             try:
                 df = pd.read_excel(self.excel_file, sheet_name=sheet)
             except Exception as e:
@@ -262,7 +262,7 @@ class CSVToChart(QWidget):
             # --- 數據重塑 (Pivot) ---
             for y_column in y_columns:
                 self.async_print(f"  -> 正在重塑欄位：{y_column}")
-                
+
                 # --- 提取基線數據 (如果有的話) ---
                 # 假設基線對於同一個時間點是固定的，與 loop 無關
                 # 需要確保時間和基線欄位對應，並去除重複時間點
@@ -328,14 +328,14 @@ class CSVToChart(QWidget):
         for sheet in self.sheet_names:
             for y_column in y_columns:
                 chart_sheet_name = f"{sheet}_{y_column}"
-                
+
                 self.async_print(f"正在處理工作表：{chart_sheet_name}")
 
                 worksheet = workbook[chart_sheet_name]
 
                 max_row = worksheet.max_row
                 max_col = worksheet.max_column
-                
+
                 # 建立折線圖並設置基礎樣式
                 chart = LineChart()
                 chart.title = f"{chart_sheet_name}"
@@ -371,7 +371,7 @@ class CSVToChart(QWidget):
 
         workbook.save(output_file)
         self.async_print("圖表處理完成！")
-    
+
     def convert_to_chart(self):
         if not self.status_check():
             return

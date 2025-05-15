@@ -6,7 +6,7 @@ tags: ['javascript', 'memmory']
 draft: false
 ---
 
-雖然JS有內存垃圾清除機制，但仍可能發生內存洩漏(Memery Leak)。  
+雖然JS有內存垃圾清除機制，但仍可能發生內存洩漏(Memery Leak)。
 程式中有某些物件無法被垃圾回收機制(Garbage Collection，GC)釋放，導致內存佔用持續增長。
 
 ## 常見導致內存洩漏的情況
@@ -24,7 +24,7 @@ draft: false
     解決方案
 
     ```ts
-    // 在不需要時，解除事件監聽器 
+    // 在不需要時，解除事件監聽器
     const handleResize = () => { /* ... */ };
     window.addEventListener('resize', handleResize);
     window.removeEventListener('resize', handleResize);  // 當不需要時解除
@@ -32,7 +32,7 @@ draft: false
 
 ### 閉包引用外部變數
 
-    閉包使得內部函數可以"記住"外部作用域的變數，會導致這些變數無法被回收。  
+    閉包使得內部函數可以"記住"外部作用域的變數，會導致這些變數無法被回收。
     如果閉包長期存在或頻繁創建閉包而沒有清理，可能導致內存增長。
 
     ```ts
